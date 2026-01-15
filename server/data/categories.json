@@ -1,0 +1,59 @@
+[
+  {
+    "id": "1",
+    "name": "Anime",
+    "slug": "anime",
+    "description": "Japanese animated films and series",
+    "created_at": "2025-12-27T10:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "name": "Bollywood",
+    "slug": "bollywood",
+    "description": "Indian Hindi-language cinema",
+    "created_at": "2025-12-27T10:30:00.000Z"
+  },
+  {
+    "id": "3",
+    "name": "Chinese Cinema",
+    "slug": "chinese-cinema",
+    "description": "Chinese-language blockbusters",
+    "created_at": "2025-12-28T09:15:00.000Z"
+  },
+  {
+    "id": "4",
+    "name": "European Cinema",
+    "slug": "european-cinema",
+    "description": "Films from France, Italy, Germany",
+    "created_at": "2025-12-28T14:20:00.000Z"
+  },
+  {
+    "id": "5",
+    "name": "Hollywood",
+    "slug": "hollywood",
+    "description": "American blockbusters and Hollywood productions",
+    "created_at": "2025-12-27T11:00:00.000Z"
+  },
+  {
+    "id": "6",
+    "name": "Korean",
+    "slug": "korean",
+    "description": "South Korean cinema and K-dramas",
+    "created_at": "2025-12-27T12:00:00.000Z"
+  },
+  {
+    "id": "7",
+    "name": "Nollywood",
+    "slug": "nollywood",
+    "description": "Nigerian film industry productions",
+    "created_at": "2025-12-27T13:00:00.000Z"
+  },
+  {
+    "id": "8",
+    "name": "TV Series",
+    "slug": "tv-series",
+    "description": "Television series and streaming shows",
+    "created_at": "2025-12-27T14:00:00.000Z",
+    "updated_at": "2026-01-10T16:31:33.205Z"
+  }
+]

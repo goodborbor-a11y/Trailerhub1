@@ -1,0 +1,112 @@
+{
+    "stats": {
+        "todayVisitors": 62,
+        "weekVisitors": 537,
+        "monthVisitors": 810,
+        "yearVisitors": 810
+    },
+    "dailyData": [
+        {
+            "name": "Mon",
+            "value": 45
+        },
+        {
+            "name": "Tue",
+            "value": 52
+        },
+        {
+            "name": "Wed",
+            "value": 38
+        },
+        {
+            "name": "Thu",
+            "value": 65
+        },
+        {
+            "name": "Fri",
+            "value": 48
+        },
+        {
+            "name": "Sat",
+            "value": 59
+        },
+        {
+            "name": "Sun",
+            "value": 62
+        }
+    ],
+    "weeklyData": [
+        {
+            "name": "Week 1",
+            "value": 150
+        },
+        {
+            "name": "Week 2",
+            "value": 230
+        },
+        {
+            "name": "Week 3",
+            "value": 180
+        },
+        {
+            "name": "Week 4",
+            "value": 250
+        }
+    ],
+    "monthlyData": [
+        {
+            "name": "Jan",
+            "value": 810
+        },
+        {
+            "name": "Feb",
+            "value": 0
+        },
+        {
+            "name": "Mar",
+            "value": 0
+        },
+        {
+            "name": "Apr",
+            "value": 0
+        },
+        {
+            "name": "May",
+            "value": 0
+        },
+        {
+            "name": "Jun",
+            "value": 0
+        },
+        {
+            "name": "Jul",
+            "value": 0
+        },
+        {
+            "name": "Aug",
+            "value": 0
+        },
+        {
+            "name": "Sep",
+            "value": 0
+        },
+        {
+            "name": "Oct",
+            "value": 0
+        },
+        {
+            "name": "Nov",
+            "value": 0
+        },
+        {
+            "name": "Dec",
+            "value": 0
+        }
+    ],
+    "yearlyData": [
+        {
+            "name": "2024",
+            "value": 810
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+node_modules
+dist
+server/node_modules
+server/dist
+.git
+.env
+*.md
+Dockerfile
+docker-compose.yml
+# package-lock.json (removed from here so Docker can use it)
+bun.lockb
+root@*
+scp
+scripts/
+supabase/
+database/
+nginx/

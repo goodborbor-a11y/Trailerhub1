@@ -1,0 +1,330 @@
+[
+    {
+        "id": "1",
+        "title": "Inception",
+        "year": 2010,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=YoHD9XEInc0",
+        "poster_url": "https://image.tmdb.org/t/p/original/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
+        "is_featured": true,
+        "is_trending": true,
+        "is_latest": false,
+        "created_at": "2023-01-01T00:00:00Z"
+    },
+    {
+        "id": "2",
+        "title": "The Dark Knight",
+        "year": 2008,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=EXeTwQWrcwY",
+        "poster_url": "https://image.tmdb.org/t/p/original/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+        "is_featured": false,
+        "is_trending": true,
+        "is_latest": false,
+        "created_at": "2023-01-02T00:00:00Z"
+    },
+    {
+        "id": "3",
+        "title": "Interstellar",
+        "year": 2014,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=zSWdZVtXT7E",
+        "poster_url": "https://image.tmdb.org/t/p/original/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+        "is_featured": false,
+        "is_trending": true,
+        "is_latest": true,
+        "created_at": "2023-01-03T00:00:00Z"
+    },
+    {
+        "id": "latest-1",
+        "title": "Severance",
+        "year": 2025,
+        "poster_url": "https://image.tmdb.org/t/p/original/pPHpeI2X1qEd1CS1SeyrdhZ4qnT.jpg",
+        "trailer_url": "https://www.youtube.com/watch?v=xEQP4VVuyrY",
+        "category": "hollywood",
+        "is_latest": true
+    },
+    {
+        "id": "latest-2",
+        "title": "The Last of Us",
+        "year": 2025,
+        "poster_url": "https://image.tmdb.org/t/p/original/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
+        "trailer_url": "https://www.youtube.com/watch?v=uLtkt8BonwM",
+        "category": "hollywood",
+        "is_latest": true
+    },
+    {
+        "id": "latest-3",
+        "title": "Squid Game S2",
+        "year": 2024,
+        "poster_url": "https://image.tmdb.org/t/p/original/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg",
+        "trailer_url": "https://www.youtube.com/watch?v=Ed1sGgHUo88",
+        "category": "korean",
+        "is_latest": true
+    },
+    {
+        "id": "latest-4",
+        "title": "Shogun",
+        "year": 2024,
+        "poster_url": "https://image.tmdb.org/t/p/original/7O4iVfOMQmdCSxhOg1WnzG1AgYT.jpg",
+        "trailer_url": "https://www.youtube.com/watch?v=HIs9x49DK7I",
+        "category": "hollywood",
+        "is_latest": true
+    },
+    {
+        "id": "latest-5",
+        "title": "House of the Dragon",
+        "year": 2024,
+        "poster_url": "https://image.tmdb.org/t/p/original/7QMsOTMUswlwxJP0rTTZfmz2tX2.jpg",
+        "trailer_url": "https://www.youtube.com/watch?v=YN2H_sKcmGw",
+        "category": "hollywood",
+        "is_latest": true
+    },
+    {
+        "id": "latest-6",
+        "title": "Fallout",
+        "year": 2024,
+        "poster_url": "https://image.tmdb.org/t/p/original/c15BtJxCXMrISLVmysdsnZUPQft.jpg",
+        "trailer_url": "https://www.youtube.com/watch?v=ECI3eCAxRGw",
+        "category": "hollywood",
+        "is_latest": true
+    },
+    {
+        "id": "tv-1",
+        "title": "Stranger Things",
+        "year": 2016,
+        "category": "tv-series",
+        "trailer_url": "https://www.youtube.com/watch?v=b9EkMc79ZSU"
+    },
+    {
+        "id": "tv-2",
+        "title": "Wednesday",
+        "year": 2022,
+        "category": "tv-series",
+        "trailer_url": "https://www.youtube.com/watch?v=Di310WS8zLk"
+    },
+    {
+        "id": "tv-3",
+        "title": "The White Lotus",
+        "year": 2021,
+        "category": "tv-series",
+        "trailer_url": "https://www.youtube.com/watch?v=TGLq7_MonZ4"
+    },
+    {
+        "id": "tv-4",
+        "title": "Yellowjackets",
+        "year": 2021,
+        "category": "tv-series",
+        "trailer_url": "https://www.youtube.com/watch?v=Axx9Qhct49w"
+    },
+    {
+        "id": "tv-5",
+        "title": "Slow Horses",
+        "year": 2022,
+        "category": "tv-series",
+        "trailer_url": "https://www.youtube.com/watch?v=A9BCtrziWtg"
+    },
+    {
+        "id": "tv-6",
+        "title": "The Gentlemen",
+        "year": 2024,
+        "category": "tv-series",
+        "trailer_url": "https://www.youtube.com/watch?v=wyEOwHrpZH4"
+    },
+    {
+        "id": "4",
+        "title": "Oppenheimer",
+        "year": 2023,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=bK6ldnjE3Y0"
+    },
+    {
+        "id": "5",
+        "title": "Dune: Part Two",
+        "year": 2024,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=Way9Dexny3w"
+    },
+    {
+        "id": "6",
+        "title": "Avatar: The Way of Water",
+        "year": 2022,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=d9MyW72ELq0"
+    },
+    {
+        "id": "7",
+        "title": "The Batman",
+        "year": 2022,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=mqqft2x_Aa4"
+    },
+    {
+        "id": "8",
+        "title": "Top Gun: Maverick",
+        "year": 2022,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=qSqVVswa420"
+    },
+    {
+        "id": "9",
+        "title": "Black Panther: Wakanda Forever",
+        "year": 2022,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=_Z3QKkl1WyM"
+    },
+    {
+        "id": "10",
+        "title": "Spider-Man: No Way Home",
+        "year": 2021,
+        "category": "hollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=JfVOs4VSpmA"
+    },
+    {
+        "id": "11",
+        "title": "The Black Book",
+        "year": 2023,
+        "category": "nollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=6PPH4SOm9gk"
+    },
+    {
+        "id": "12",
+        "title": "Anikulapo",
+        "year": 2022,
+        "category": "nollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=CBnIpwSOWEg"
+    },
+    {
+        "id": "13",
+        "title": "King of Thieves",
+        "year": 2022,
+        "category": "nollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=7VzWqdFfdGY"
+    },
+    {
+        "id": "14",
+        "title": "Gangs of Lagos",
+        "year": 2023,
+        "category": "nollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=CciXkcGPij8"
+    },
+    {
+        "id": "15",
+        "title": "Brotherhood",
+        "year": 2022,
+        "category": "nollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=cJaR6ScaKmM"
+    },
+    {
+        "id": "16",
+        "title": "Pathaan",
+        "year": 2023,
+        "category": "bollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=vqu4z34wENw"
+    },
+    {
+        "id": "17",
+        "title": "Jawan",
+        "year": 2023,
+        "category": "bollywood",
+        "trailer_url": "https://www.youtube.com/watch?v=COv52Qyctws"
+    },
+    {
+        "id": "18",
+        "title": "Parasite",
+        "year": 2019,
+        "category": "korean",
+        "trailer_url": "https://www.youtube.com/watch?v=5xH0HfJHsaY"
+    },
+    {
+        "id": "19",
+        "title": "Squid Game",
+        "year": 2021,
+        "category": "korean",
+        "trailer_url": "https://www.youtube.com/watch?v=oqxAJKy0ii4"
+    },
+    {
+        "id": "20",
+        "title": "Suzume",
+        "year": 2022,
+        "category": "animation",
+        "trailer_url": "https://www.youtube.com/watch?v=5pTcio2hTSw"
+    },
+    {
+        "id": "21",
+        "title": "Jujutsu Kaisen 0",
+        "year": 2021,
+        "category": "animation",
+        "trailer_url": "https://www.youtube.com/watch?v=4A_X-Dvl0ws"
+    },
+    {
+        "id": "22",
+        "title": "The Wandering Earth 2",
+        "year": 2023,
+        "category": "chinese",
+        "trailer_url": "https://www.youtube.com/watch?v=8ZIfInUTiIg"
+    },
+    {
+        "id": "23",
+        "title": "Detective Chinatown 3",
+        "year": 2021,
+        "category": "chinese",
+        "trailer_url": "https://www.youtube.com/watch?v=Q3yHJuRkfUI"
+    },
+    {
+        "id": "24",
+        "title": "The Zone of Interest",
+        "year": 2023,
+        "category": "european",
+        "trailer_url": "https://www.youtube.com/watch?v=r-vfg3KkV54"
+    },
+    {
+        "id": "25",
+        "title": "Anatomy of a Fall",
+        "year": 2023,
+        "category": "european",
+        "trailer_url": "https://www.youtube.com/watch?v=fTrsp5BMloA"
+    },
+    {
+        "id": "26",
+        "title": "Se7en",
+        "year": 1995,
+        "category": "thrillers",
+        "trailer_url": "https://www.youtube.com/watch?v=znmZoVkCjpI"
+    },
+    {
+        "id": "27",
+        "title": "Gone Girl",
+        "year": 2014,
+        "category": "thrillers",
+        "trailer_url": "https://www.youtube.com/watch?v=2-_-1nJf8Vg"
+    },
+    {
+        "id": "28",
+        "title": "Prisoners",
+        "year": 2013,
+        "category": "thrillers",
+        "trailer_url": "https://www.youtube.com/watch?v=bpXfcTF6iVk"
+    },
+    {
+        "id": "29",
+        "title": "Shutter Island",
+        "year": 2010,
+        "category": "thrillers",
+        "trailer_url": "https://www.youtube.com/watch?v=5iaYLCiq5RM"
+    },
+    {
+        "id": "30",
+        "title": "The Silence of the Lambs",
+        "year": 1991,
+        "category": "thrillers",
+        "trailer_url": "https://www.youtube.com/watch?v=6iB21hsprAQ"
+    },
+    {
+        "id": "31",
+        "title": "Zodiac",
+        "year": 2007,
+        "category": "thrillers",
+        "trailer_url": "https://www.youtube.com/watch?v=yNncHPl1UXg"
+    }
+]

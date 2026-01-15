@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "email": "BOSSMANUEL1964@GMAIL.COM",
+    "role": "admin",
+    "password_hash": "$2a$10$WQjc4mXRx5/fD/sq43mkcezq.KoatRJasMVaA3i6LMVjar8TQ.NlG",
+    "created_at": "2025-12-27T00:00:00Z",
+    "display_name": "Bayode Goodluck",
+    "avatar_url": null,
+    "is_suspended": false
+  },
+  {
+    "id": "2",
+    "email": "drock4christ1@gmail.com",
+    "role": "user",
+    "password_hash": "$2a$10$WQjc4mXRx5/fD/sq43mkcezq.KoatRJasMVaA3i6LMVjar8TQ.NlG",
+    "created_at": "2025-12-29T10:00:00Z",
+    "display_name": "Apata Bayode",
+    "avatar_url": null,
+    "is_suspended": false
+  },
+  {
+    "id": "3",
+    "email": "goodborbor@gmail.com",
+    "role": "user",
+    "password_hash": "$2a$10$WQjc4mXRx5/fD/sq43mkcezq.KoatRJasMVaA3i6LMVjar8TQ.NlG",
+    "created_at": "2025-12-29T11:30:00Z",
+    "display_name": "Goodluck Ajayi",
+    "avatar_url": null,
+    "is_suspended": false
+  }
+]

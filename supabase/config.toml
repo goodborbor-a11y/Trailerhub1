@@ -1,0 +1,4 @@
+project_id = "tubqfnotmzadogdpyusz"
+
+[functions.tmdb-search]
+verify_jwt = false

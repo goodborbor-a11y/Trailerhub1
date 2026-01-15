@@ -1,0 +1,42 @@
+[
+    {
+        "id": "1",
+        "title": "Avengers: Doomsday",
+        "release_date": "2026-12-18",
+        "category": "Hollywood",
+        "description": "In a quiet cabin far from the world he once saved, Steve...",
+        "trailer_url": "https://www.youtube.com/watch?v=hA6hldpSTF8",
+        "poster_url": "https://image.tmdb.org/t/p/original/8cdWjvZonExuu94rFL5jJmDHRZT.jpg",
+        "is_released": false
+    },
+    {
+        "id": "2",
+        "title": "Avatar 3",
+        "release_date": "2025-12-19",
+        "category": "Hollywood",
+        "description": "The third installment in the Avatar franchise",
+        "trailer_url": "https://www.youtube.com/watch?v=5PSNL1qE6VY",
+        "poster_url": "https://image.tmdb.org/t/p/original/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+        "is_released": false
+    },
+    {
+        "id": "3",
+        "title": "Pushpa 3",
+        "release_date": "2025-08-15",
+        "category": "Bollywood",
+        "description": "Continuation of the Pushpa saga",
+        "trailer_url": "https://www.youtube.com/watch?v=Q1NKMPhP8PY",
+        "poster_url": "https://image.tmdb.org/t/p/original/1E5baAaEse26fej7uHcjOgEE2t2.jpg",
+        "is_released": false
+    },
+    {
+        "id": "4",
+        "title": "Mission Impossible 8",
+        "release_date": "2025-05-23",
+        "category": "Hollywood",
+        "description": "The next chapter in the MI franchise",
+        "trailer_url": "https://www.youtube.com/watch?v=2m1drlOZSDw",
+        "poster_url": "https://image.tmdb.org/t/p/original/t3bY4d1u7F6g8k7r5B2c9q4x8.jpg",
+        "is_released": false
+    }
+]

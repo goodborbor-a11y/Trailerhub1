@@ -1,0 +1,65 @@
+[
+    {
+        "id": "1",
+        "movie_id": "1",
+        "user_id": "1",
+        "content": "Amazing movie!",
+        "created_at": "2023-01-02T12:00:00Z"
+    },
+    {
+        "id": "2",
+        "movie_id": "1",
+        "user_id": "2",
+        "content": "Mind blowing.",
+        "created_at": "2023-01-03T09:30:00Z"
+    },
+    {
+        "id": "3",
+        "movie_id": "2",
+        "user_id": "3",
+        "content": "The best Batman.",
+        "created_at": "2023-01-04T15:20:00Z"
+    },
+    {
+        "id": "4",
+        "movie_id": "2",
+        "user_id": "1",
+        "content": "Heath Ledger is legendary.",
+        "created_at": "2023-01-05T18:45:00Z"
+    },
+    {
+        "id": "5",
+        "movie_id": "3",
+        "user_id": "2",
+        "content": "Visual masterpiece.",
+        "created_at": "2023-01-06T11:10:00Z"
+    },
+    {
+        "id": "6",
+        "movie_id": "3",
+        "user_id": "3",
+        "content": "Cried at the end.",
+        "created_at": "2023-01-07T20:00:00Z"
+    },
+    {
+        "id": "7",
+        "movie_id": "latest-1",
+        "user_id": "1",
+        "content": "Can't wait!",
+        "created_at": "2023-01-08T08:15:00Z"
+    },
+    {
+        "id": "8",
+        "movie_id": "latest-2",
+        "user_id": "2",
+        "content": "Looks intense.",
+        "created_at": "2023-01-09T14:50:00Z"
+    },
+    {
+        "id": "9",
+        "movie_id": "1",
+        "user_id": "2",
+        "content": "Rewatching this again.",
+        "created_at": "2023-01-10T16:30:00Z"
+    }
+]

@@ -1,0 +1,39 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            # Stop just in case, or we can do zero-downtime later
+            cd /var/www/movietrailers
+            
+            # Ensure we are on main and up to date
+            git checkout main
+            git fetch origin
+            git reset --hard origin/main
+            
+            # Build frontend assets on host for Nginx to mount
+            # We use a temporary container to avoid needing specific Node version on host
+            echo "Building frontend..."
+            docker run --rm -v $(pwd):/app -w /app node:20-alpine sh -c "npm ci && npm run build"
+            
+            # Restart services
+            echo "Restarting services..."
+            docker compose down
+            docker compose build --no-cache backend
+            docker compose up -d
+            
+            # Cleanup unused images
+            docker system prune -f

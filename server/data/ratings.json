@@ -1,0 +1,65 @@
+[
+    {
+        "id": "1",
+        "user_id": "mock-user-1",
+        "display_name": "Bayode Goodluck",
+        "movie_id": "trending-6",
+        "rating": 4,
+        "review": "FFF",
+        "created_at": "2026-01-02T10:00:00Z"
+    },
+    {
+        "id": "2",
+        "user_id": "mock-user-2",
+        "display_name": "Apata Bayode",
+        "movie_id": "11",
+        "rating": 4,
+        "review": "Nice movie...",
+        "created_at": "2025-12-31T14:30:00Z"
+    },
+    {
+        "id": "3",
+        "user_id": "mock-user-1",
+        "display_name": "Bayode Goodluck",
+        "movie_id": "latest-1",
+        "rating": 4,
+        "review": "tmrrtre",
+        "created_at": "2025-12-31T12:00:00Z"
+    },
+    {
+        "id": "4",
+        "user_id": "mock-user-1",
+        "display_name": "Bayode Goodluck",
+        "movie_id": "29",
+        "rating": 4,
+        "review": "SKLL",
+        "created_at": "2025-12-30T10:00:00Z"
+    },
+    {
+        "id": "5",
+        "user_id": "mock-user-1",
+        "display_name": "Bayode Goodluck",
+        "movie_id": "31",
+        "rating": 4,
+        "review": "UMMM SO YEAH",
+        "created_at": "2025-12-30T09:00:00Z"
+    },
+    {
+        "id": "6",
+        "user_id": "mock-user-2",
+        "display_name": "Apata Bayode",
+        "movie_id": "tv-1",
+        "rating": 1,
+        "review": "Stranger things is fucking crap now!! this last ...",
+        "created_at": "2025-12-29T18:00:00Z"
+    },
+    {
+        "id": "7",
+        "user_id": "mock-user-1",
+        "display_name": "Bayode Goodluck",
+        "movie_id": "db-b6cfae",
+        "rating": 4,
+        "review": "runtesting 05",
+        "created_at": "2025-12-28T10:00:00Z"
+    }
+]

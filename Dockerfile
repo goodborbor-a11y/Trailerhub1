@@ -1,0 +1,75 @@
+# ===========================================
+# Multi-stage Dockerfile for Movie Trailers App
+# ===========================================
+
+# Stage 1: Build the frontend
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+RUN npm ci
+
+# Copy source files
+COPY . .
+
+# Set build-time environment variables
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
+# Build the frontend
+RUN npm run build
+
+# Stage 2: Build the backend
+FROM node:20-alpine AS backend-builder
+
+WORKDIR /app/server
+
+# Copy server package files
+COPY server/package*.json ./
+COPY server/tsconfig.json ./
+
+# Install all dependencies (including dev dependencies for TypeScript)
+RUN npm install
+
+# Copy server source
+COPY server/src ./src
+
+# Build TypeScript
+RUN npm run build
+
+# Stage 3: Production image
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Install production dependencies
+RUN apk add --no-cache dumb-init
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Copy built frontend
+COPY --from=frontend-builder /app/dist ./dist
+
+# Copy backend (including compiled JS and node_modules)
+COPY --from=backend-builder /app/server/dist ./server/dist
+COPY --from=backend-builder /app/server/node_modules ./server/node_modules
+COPY server/package.json ./server/
+COPY server/data ./server/data
+
+# Create uploads directory
+RUN mkdir -p /var/www/uploads && chown nodejs:nodejs /var/www/uploads
+
+# Set ownership
+RUN chown -R nodejs:nodejs /app
+
+USER nodejs
+
+EXPOSE 3001
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "server/dist/index.js"]

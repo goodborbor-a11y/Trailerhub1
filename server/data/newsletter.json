@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "email": "preciousbay1031@gmail.com",
+        "is_active": true,
+        "subscribed_at": "2025-12-31T12:40:00.000Z"
+    },
+    {
+        "id": "2",
+        "email": "guyemmy09@gmail.com",
+        "is_active": true,
+        "subscribed_at": "2025-12-30T18:09:00.000Z"
+    },
+    {
+        "id": "3",
+        "email": "bossmanuel1964@gmail.com",
+        "is_active": true,
+        "subscribed_at": "2025-12-28T17:36:00.000Z"
+    },
+    {
+        "id": "4",
+        "email": "test@test.com",
+        "is_active": true,
+        "subscribed_at": "2025-12-28T17:30:00.000Z"
+    }
+]
