@@ -55,7 +55,7 @@ export const Footer = () => {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center">
-            © {new Date().getFullYear()} TrailersHub. All rights reserved. | Deployed via CI/CD ✨
+            © {new Date().getFullYear()} TrailersHub. All rights reserved. | Deployed via CI/CD ✨ Deployed via CI/CD ✨
           </p>
         </div>
       </div>
