@@ -861,87 +861,118 @@ app.get('/api/movies/:id', async (req: Request, res: Response) => {
 
 // Admin movie routes
 // Admin movie routes
+// Admin movie routes
 app.post('/api/movies', authenticateToken, isAdmin, async (req: AuthRequest, res: Response) => {
   const { title, year, category, trailer_url, poster_url, is_featured, is_trending, is_latest, genres } = req.body;
 
   try {
-    const movies = getLocalMovies();
-    const newMovie = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-      title,
-      year,
-      category,
-      trailer_url,
-      poster_url,
-      is_featured: is_featured || false,
-      is_trending: is_trending || false,
-      is_latest: is_latest || false,
-      genres: req.body.genres || [],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
+    // Write to Database (Persistent)
+    const result = await pool.query(
+      `INSERT INTO movies 
+       (title, year, category, poster_url, trailer_url, is_featured, is_trending, is_latest, created_at, updated_at) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW()) 
+       RETURNING *`,
+      [title, year, category, poster_url, trailer_url, is_featured || false, is_trending || false, is_latest || false]
+    );
 
-    movies.push(newMovie);
-    saveLocalMovies(movies);
+    const newMovie = result.rows[0];
+    newMovie.genres = genres || []; // Pass through genres for frontend consistency (though not saved)
 
     res.status(201).json({ movie: newMovie });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create movie error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: error.message || 'Server error' });
   }
 });
 
 app.put('/api/movies/:id', authenticateToken, isAdmin, async (req: AuthRequest, res: Response) => {
   const { title, year, category, trailer_url, poster_url, is_featured, is_trending, is_latest, genres } = req.body;
+  const { id } = req.params;
 
   try {
-    const movies = getLocalMovies();
-    const movieIndex = findMovieIndex(movies, req.params.id);
+    // 1. Try Update Database
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    let updatedMovie = null;
 
-    if (movieIndex === -1) {
+    if (isUuid) {
+      const result = await pool.query(
+        `UPDATE movies 
+         SET title=$1, year=$2, category=$3, poster_url=$4, trailer_url=$5, 
+             is_featured=$6, is_trending=$7, is_latest=$8, updated_at=NOW()
+         WHERE id = $9
+         RETURNING *`,
+        [title, year, category, poster_url, trailer_url, is_featured, is_trending, is_latest, id]
+      );
+      if (result.rows.length > 0) {
+        updatedMovie = result.rows[0];
+        updatedMovie.genres = genres || [];
+      }
+    }
+
+    // 2. If not in DB (or not UUID), Try Update JSON
+    if (!updatedMovie) {
+      const movies = getLocalMovies();
+      const movieIndex = findMovieIndex(movies, id);
+
+      if (movieIndex !== -1) {
+        updatedMovie = {
+          ...movies[movieIndex],
+          title,
+          year,
+          category,
+          trailer_url,
+          poster_url,
+          is_featured,
+          is_trending,
+          is_latest,
+          genres: genres || movies[movieIndex].genres || [],
+          updated_at: new Date().toISOString()
+        };
+        movies[movieIndex] = updatedMovie;
+        saveLocalMovies(movies);
+      }
+    }
+
+    if (!updatedMovie) {
       return res.status(404).json({ error: 'Movie not found' });
     }
 
-    const updatedMovie = {
-      ...movies[movieIndex],
-      title,
-      year,
-      category,
-      trailer_url,
-      poster_url,
-      is_featured,
-      is_trending,
-      is_latest,
-      genres: req.body.genres || movies[movieIndex].genres || [],
-      updated_at: new Date().toISOString()
-    };
-
-    movies[movieIndex] = updatedMovie;
-    saveLocalMovies(movies);
-
     res.json({ movie: updatedMovie });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Update movie error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: error.message || 'Server error' });
   }
 });
 
 app.delete('/api/movies/:id', authenticateToken, isAdmin, async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
   try {
-    const movies = getLocalMovies();
-    const movieIndex = findMovieIndex(movies, req.params.id);
+    let deleted = false;
 
-    if (movieIndex === -1) {
+    // 1. Try Delete DB
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      const result = await pool.query('DELETE FROM movies WHERE id = $1', [id]);
+      if (result.rowCount && result.rowCount > 0) deleted = true;
+    }
+
+    // 2. Also Try Delete JSON (Cleanup)
+    const movies = getLocalMovies();
+    const movieIndex = findMovieIndex(movies, id);
+    if (movieIndex !== -1) {
+      movies.splice(movieIndex, 1);
+      saveLocalMovies(movies);
+      deleted = true;
+    }
+
+    if (!deleted) {
       return res.status(404).json({ error: 'Movie not found' });
     }
 
-    movies.splice(movieIndex, 1);
-    saveLocalMovies(movies);
-
     res.json({ message: 'Movie deleted' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Delete movie error:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: error.message || 'Server error' });
   }
 });
 
