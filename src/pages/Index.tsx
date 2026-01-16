@@ -223,7 +223,7 @@ const Index = () => {
       <main>
         {!isSearching && (
           <Hero
-            categoriesCount={categories.length + 1}
+            categoriesCount={9}
             moviesCount={moviesCount}
           />
         )}

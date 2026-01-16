@@ -5,19 +5,25 @@ import api from "@/lib/api";
 
 export const Footer = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [copyrightText, setCopyrightText] = useState<string>("");
 
   useEffect(() => {
-    fetchLogo();
+    fetchSettings();
   }, []);
 
-  const fetchLogo = async () => {
+  const fetchSettings = async () => {
     try {
       const result = await api.getSiteSettings();
-      if (result.data?.settings?.footer_logo_url) {
-        setLogoUrl(result.data.settings.footer_logo_url);
+      if (result.data?.settings) {
+        if (result.data.settings.footer_logo_url) {
+          setLogoUrl(result.data.settings.footer_logo_url);
+        }
+        if (result.data.settings.copyright_text) {
+          setCopyrightText(result.data.settings.copyright_text);
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch footer logo:', error);
+      console.error('Failed to fetch footer settings:', error);
     }
   };
 
@@ -55,7 +61,7 @@ export const Footer = () => {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center">
-            © {new Date().getFullYear()} TrailersHub. All rights reserved. | Deployed via CI/CD ✨ Deployed via CI/CD ✨
+            {copyrightText || `© ${new Date().getFullYear()} TrailersHub. All rights reserved.`}
           </p>
         </div>
       </div>
