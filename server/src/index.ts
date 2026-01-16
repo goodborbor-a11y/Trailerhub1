@@ -732,6 +732,32 @@ app.get('/api/movies', async (req: Request, res: Response) => {
     // Read from local JSON
     let movies = getLocalMovies();
 
+    // Read from Database and merge
+    try {
+      const dbResult = await pool.query('SELECT * FROM movies');
+      const dbMovies = dbResult.rows.map(row => ({
+        id: row.id,
+        title: row.title,
+        year: row.year,
+        category: row.category,
+        poster_url: row.poster_url,
+        trailer_url: row.trailer_url,
+        is_featured: row.is_featured,
+        is_trending: row.is_trending,
+        is_latest: row.is_latest,
+        created_at: row.created_at,
+        genres: [] // DB schema doesn't have genres col yet
+      }));
+
+      // Merge (avoid duplicates by ID)
+      const jsonIds = new Set(movies.map(m => m.id));
+      const newDbMovies = dbMovies.filter(m => !jsonIds.has(m.id));
+      movies = [...movies, ...newDbMovies];
+    } catch (dbErr) {
+      console.error('Failed to fetch movies from DB:', dbErr);
+      // Continue with just JSON movies if DB fails
+    }
+
     // Filter
     if (category) {
       movies = movies.filter(m => (m.category || '').toLowerCase() === (category as string).toLowerCase());
@@ -787,11 +813,37 @@ app.get('/api/movies/:id', async (req: Request, res: Response) => {
     const movies = getLocalMovies();
     const movieIndex = findMovieIndex(movies, req.params.id);
 
-    if (movieIndex === -1) {
-      return res.status(404).json({ error: 'Movie not found' });
+    let movie;
+    if (movieIndex !== -1) {
+      movie = movies[movieIndex];
+    } else {
+      // Not in JSON, check DB
+      try {
+        const dbResult = await pool.query('SELECT * FROM movies WHERE id = $1', [req.params.id]);
+        if (dbResult.rows.length > 0) {
+          const row = dbResult.rows[0];
+          movie = {
+            id: row.id,
+            title: row.title,
+            year: row.year,
+            category: row.category,
+            poster_url: row.poster_url,
+            trailer_url: row.trailer_url,
+            is_featured: row.is_featured,
+            is_trending: row.is_trending,
+            is_latest: row.is_latest,
+            created_at: row.created_at,
+            genres: []
+          };
+        }
+      } catch (dbErr) {
+        console.error('DB fetch error for movie:', dbErr);
+      }
     }
 
-    const movie = movies[movieIndex];
+    if (!movie) {
+      return res.status(404).json({ error: 'Movie not found' });
+    }
 
     // Mock rating stats
     movie.rating_stats = {
