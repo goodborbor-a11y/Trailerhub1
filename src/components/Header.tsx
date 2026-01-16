@@ -142,8 +142,8 @@ export const Header = ({ searchQuery, onSearchChange, onSearchClear }: HeaderPro
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] border-l border-border bg-background p-0">
-              <div className="flex h-16 items-center justify-between border-b border-border px-4">
+            <SheetContent side="right" className="flex h-full w-[280px] flex-col border-l border-border bg-background p-0">
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-4">
                 <span className="font-display text-xl tracking-wide">
                   MENU
                 </span>
@@ -154,88 +154,90 @@ export const Header = ({ searchQuery, onSearchChange, onSearchClear }: HeaderPro
                 </SheetClose>
               </div>
 
-              {/* User menu for mobile */}
-              <div className="border-b border-border px-4 py-3 sm:hidden">
-                <UserMenu />
-              </div>
-
-              <nav className="flex flex-col py-4">
-                {/* Main Navigation Links */}
-                <SheetClose asChild>
-                  <NavLink
-                    to="/trending"
-                    className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                    activeClassName="bg-primary/10 text-primary"
-                  >
-                    <Flame className="h-5 w-5 text-primary" />
-                    <span className="text-lg font-medium">Trending</span>
-                  </NavLink>
-                </SheetClose>
-                <SheetClose asChild>
-                  <NavLink
-                    to="/upcoming"
-                    className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                    activeClassName="bg-primary/10 text-primary"
-                  >
-                    <Calendar className="h-5 w-5 text-primary" />
-                    <span className="text-lg font-medium">Upcoming</span>
-                  </NavLink>
-                </SheetClose>
-                <SheetClose asChild>
-                  <NavLink
-                    to="/movies"
-                    className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                    activeClassName="bg-primary/10 text-primary"
-                  >
-                    <Film className="h-5 w-5 text-primary" />
-                    <span className="text-lg font-medium">Movies</span>
-                  </NavLink>
-                </SheetClose>
-                <SheetClose asChild>
-                  <NavLink
-                    to="/categories"
-                    className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                    activeClassName="bg-primary/10 text-primary"
-                  >
-                    <Grid3x3 className="h-5 w-5 text-primary" />
-                    <span className="text-lg font-medium">Categories</span>
-                  </NavLink>
-                </SheetClose>
-
-                <div className="my-2 mx-6 border-t border-border/50" />
-
-                <div className="px-6 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Browse by Category
+              <div className="flex-1 overflow-y-auto">
+                {/* User menu for mobile */}
+                <div className="block border-b border-border px-4 py-3 sm:hidden">
+                  <UserMenu />
                 </div>
 
-                {/* TV Series at the top */}
-                <SheetClose asChild>
-                  <button
-                    onClick={() => scrollToCategory(tvSeriesCategory.id)}
-                    className="flex items-center justify-between px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                  >
-                    <span className="flex items-center gap-3 text-lg font-medium">
-                      <Tv className="h-5 w-5 text-primary" />
-                      {tvSeriesCategory.name}
-                    </span>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                  </button>
-                </SheetClose>
+                <nav className="flex flex-col py-4">
+                  {/* Main Navigation Links */}
+                  <SheetClose asChild>
+                    <NavLink
+                      to="/trending"
+                      className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                      activeClassName="bg-primary/10 text-primary"
+                    >
+                      <Flame className="h-5 w-5 text-primary" />
+                      <span className="text-lg font-medium">Trending</span>
+                    </NavLink>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <NavLink
+                      to="/upcoming"
+                      className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                      activeClassName="bg-primary/10 text-primary"
+                    >
+                      <Calendar className="h-5 w-5 text-primary" />
+                      <span className="text-lg font-medium">Upcoming</span>
+                    </NavLink>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <NavLink
+                      to="/movies"
+                      className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                      activeClassName="bg-primary/10 text-primary"
+                    >
+                      <Film className="h-5 w-5 text-primary" />
+                      <span className="text-lg font-medium">Movies</span>
+                    </NavLink>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <NavLink
+                      to="/categories"
+                      className="flex items-center gap-3 px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                      activeClassName="bg-primary/10 text-primary"
+                    >
+                      <Grid3x3 className="h-5 w-5 text-primary" />
+                      <span className="text-lg font-medium">Categories</span>
+                    </NavLink>
+                  </SheetClose>
 
-                <div className="my-2 mx-6 border-t border-border/50" />
+                  <div className="my-2 mx-6 border-t border-border/50" />
 
-                {categories.map((category) => (
-                  <SheetClose key={category.id} asChild>
+                  <div className="px-6 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Browse by Category
+                  </div>
+
+                  {/* TV Series at the top */}
+                  <SheetClose asChild>
                     <button
-                      onClick={() => scrollToCategory(category.id)}
+                      onClick={() => scrollToCategory(tvSeriesCategory.id)}
                       className="flex items-center justify-between px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
                     >
-                      <span className="text-lg font-medium">{category.name}</span>
+                      <span className="flex items-center gap-3 text-lg font-medium">
+                        <Tv className="h-5 w-5 text-primary" />
+                        {tvSeriesCategory.name}
+                      </span>
                       <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </button>
                   </SheetClose>
-                ))}
-              </nav>
+
+                  <div className="my-2 mx-6 border-t border-border/50" />
+
+                  {categories.map((category) => (
+                    <SheetClose key={category.id} asChild>
+                      <button
+                        onClick={() => scrollToCategory(category.id)}
+                        className="flex items-center justify-between px-6 py-4 text-left text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                      >
+                        <span className="text-lg font-medium">{category.name}</span>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      </button>
+                    </SheetClose>
+                  ))}
+                </nav>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
