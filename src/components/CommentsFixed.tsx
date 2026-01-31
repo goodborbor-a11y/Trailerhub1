@@ -273,7 +273,32 @@ export const CommentsFixed = ({ movieId, movieTitle }: CommentsProps) => {
 
             setReplyContent('');
             setReplyingTo(null);
-            fetchComments(); // Refresh comments
+            setReplyContent('');
+            setReplyingTo(null);
+
+            // Optimistically add the reply to the list if returned by API
+            if (result.data?.comment) {
+                setComments(prevComments => {
+                    const updateComment = (comment: Comment): Comment => {
+                        if (comment.id === parentId) {
+                            return {
+                                ...comment,
+                                replies: [...(comment.replies || []), result.data.comment]
+                            };
+                        }
+                        if (comment.replies) {
+                            return {
+                                ...comment,
+                                replies: comment.replies.map(updateComment)
+                            };
+                        }
+                        return comment;
+                    };
+                    return prevComments.map(updateComment);
+                });
+            } else {
+                fetchComments(); // Refresh comments as fallback
+            }
         } catch (error: any) {
             console.error('Error posting reply:', error);
             toast({
