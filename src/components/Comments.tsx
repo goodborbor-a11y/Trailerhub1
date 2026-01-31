@@ -344,6 +344,14 @@ export const Comments = ({ movieId, movieTitle }: CommentsProps) => {
       });
     } catch (error: any) {
       console.error('Error liking comment:', error);
+
+      // If comment not found (404), likely a sync issue with optimistic updates
+      // Just refresh the list silently
+      if (error.message?.includes('not found') || error.message?.includes('404')) {
+        fetchComments();
+        return;
+      }
+
       toast({
         title: 'Error',
         description: error.message || 'Failed to like comment',
