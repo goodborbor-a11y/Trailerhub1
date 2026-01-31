@@ -186,6 +186,10 @@ class ApiClient {
     return result;
   }
 
+  private cleanMovieId(id: string): string {
+    return id.toString().replace('db-', '');
+  }
+
   // Movies
   async getMovies(params?: {
     category?: string;
@@ -207,8 +211,7 @@ class ApiClient {
   }
 
   async getMovie(id: string) {
-    const cleanId = id.toString().replace('db-', '');
-    return this.request<{ movie: any }>(`/api/movies/${cleanId}`);
+    return this.request<{ movie: any }>(`/api/movies/${this.cleanMovieId(id)}`);
   }
 
   async createMovie(movie: any) {
@@ -219,16 +222,14 @@ class ApiClient {
   }
 
   async updateMovie(id: string, movie: any) {
-    const cleanId = id.toString().replace('db-', '');
-    return this.request<{ movie: any }>(`/api/movies/${cleanId}`, {
+    return this.request<{ movie: any }>(`/api/movies/${this.cleanMovieId(id)}`, {
       method: 'PUT',
       body: JSON.stringify(movie),
     });
   }
 
   async deleteMovie(id: string) {
-    const cleanId = id.toString().replace('db-', '');
-    return this.request(`/api/movies/${cleanId}`, { method: 'DELETE' });
+    return this.request(`/api/movies/${this.cleanMovieId(id)}`, { method: 'DELETE' });
   }
 
   // Watchlist
@@ -240,7 +241,7 @@ class ApiClient {
     return this.request<{ item: any }>('/api/watchlist', {
       method: 'POST',
       body: JSON.stringify({
-        movie_id: movieId,
+        movie_id: this.cleanMovieId(movieId),
         is_favorite: isFavorite,
         guest_identifier: guestIdentifier
       }),
@@ -248,7 +249,7 @@ class ApiClient {
   }
 
   async removeFromWatchlist(movieId: string) {
-    return this.request(`/api/watchlist/${movieId}`, { method: 'DELETE' });
+    return this.request(`/api/watchlist/${this.cleanMovieId(movieId)}`, { method: 'DELETE' });
   }
 
   // Ratings
@@ -257,14 +258,14 @@ class ApiClient {
   }
 
   async getMovieRatings(movieId: string) {
-    return this.request<{ ratings: any[] }>(`/api/ratings/${movieId}`);
+    return this.request<{ ratings: any[] }>(`/api/ratings/${this.cleanMovieId(movieId)}`);
   }
 
   async submitRating(movieId: string, rating: number, review?: string, guestIdentifier?: string) {
     return this.request<{ rating: any }>('/api/ratings', {
       method: 'POST',
       body: JSON.stringify({
-        movie_id: movieId,
+        movie_id: this.cleanMovieId(movieId),
         rating,
         review,
         guest_identifier: guestIdentifier
@@ -278,7 +279,7 @@ class ApiClient {
 
   // Comments methods
   async getComments(movieId: string) {
-    const result = await this.request<{ comments: any[] }>(`/api/comments/${movieId}`);
+    const result = await this.request<{ comments: any[] }>(`/api/comments/${this.cleanMovieId(movieId)}`);
 
     // Fallback for demo/dev purposes if backend is down
     if (result.error) {
@@ -288,7 +289,7 @@ class ApiClient {
           comments: [
             {
               id: 'mock-1',
-              movie_id: movieId,
+              movie_id: this.cleanMovieId(movieId),
               author_name: 'TrailersHub Bot',
               content: 'The backend database is currently unreachable, but you can still browse the trailers! This is a fallback message.',
               created_at: new Date().toISOString(),
@@ -307,7 +308,7 @@ class ApiClient {
     return this.request<{ comment: any }>('/api/comments', {
       method: 'POST',
       body: JSON.stringify({
-        movie_id: movieId,
+        movie_id: this.cleanMovieId(movieId),
         content,
         parent_comment_id: parentCommentId,
         author_name: authorName,

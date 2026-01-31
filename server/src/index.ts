@@ -159,7 +159,7 @@ const getLocalUsers = (): any[] => {
   try { return JSON.parse(fs.readFileSync(USERS_FILE, 'utf-8')); } catch (e) { console.error('Error reading users file:', e); return []; }
 };
 const saveLocalUsers = (users: any[]) => {
-  try { fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2)); } catch (e) { console.error('Error writing users file:', e); }
+  try { fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2)); } catch (e) { console.error('Error writing users file:', e); throw e; }
 };
 
 // Comments
@@ -174,7 +174,7 @@ const getLocalComments = (): LocalComment[] => {
   try { return JSON.parse(fs.readFileSync(COMMENTS_FILE, 'utf-8')); } catch (e) { console.error('Error reading comments file:', e); return []; }
 };
 const saveLocalComments = (comments: LocalComment[]) => {
-  try { fs.writeFileSync(COMMENTS_FILE, JSON.stringify(comments, null, 2)); } catch (e) { console.error('Error writing comments file:', e); }
+  try { fs.writeFileSync(COMMENTS_FILE, JSON.stringify(comments, null, 2)); } catch (e) { console.error('Error writing comments file:', e); throw e; }
 };
 
 // Movies
@@ -197,7 +197,7 @@ const getLocalRatings = (): LocalRating[] => {
   try { return JSON.parse(fs.readFileSync(RATINGS_FILE, 'utf-8')); } catch (e) { console.error('Error reading ratings file:', e); return []; }
 };
 const saveLocalRatings = (ratings: LocalRating[]) => {
-  try { fs.writeFileSync(RATINGS_FILE, JSON.stringify(ratings, null, 2)); } catch (e) { console.error('Error writing ratings file:', e); }
+  try { fs.writeFileSync(RATINGS_FILE, JSON.stringify(ratings, null, 2)); } catch (e) { console.error('Error writing ratings file:', e); throw e; }
 };
 
 // Watchlist
@@ -207,7 +207,7 @@ const getLocalWatchlist = (): any[] => {
   try { return JSON.parse(fs.readFileSync(WATCHLIST_FILE, 'utf-8')); } catch (e) { console.error('Error reading watchlist file:', e); return []; }
 };
 const saveLocalWatchlist = (watchlist: any[]) => {
-  try { fs.writeFileSync(WATCHLIST_FILE, JSON.stringify(watchlist, null, 2)); } catch (e) { console.error('Error writing watchlist file:', e); }
+  try { fs.writeFileSync(WATCHLIST_FILE, JSON.stringify(watchlist, null, 2)); } catch (e) { console.error('Error writing watchlist file:', e); throw e; }
 };
 
 // Categories

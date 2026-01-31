@@ -52,6 +52,16 @@ services:
       postgres:
         condition: service_healthy
 
+  # Adminer Database GUI
+  adminer:
+    image: adminer
+    container_name: movietrailers-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
   # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
