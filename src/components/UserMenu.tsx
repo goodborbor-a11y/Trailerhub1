@@ -67,10 +67,6 @@ export const UserMenu = () => {
           <Heart className="h-4 w-4 mr-2" />
           Favorites
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate('/my-reviews')}>
-          <Star className="h-4 w-4 mr-2" />
-          My Reviews
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
           <LogOut className="h-4 w-4 mr-2" />

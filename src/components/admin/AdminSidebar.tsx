@@ -24,7 +24,7 @@ const menuItems = [
   { title: 'TMDB Import', url: '/admin/tmdb-import', icon: Database },
   { title: 'Categories', url: '/admin/categories', icon: Folder },
   { title: 'Bulk Import', url: '/admin/bulk-import', icon: Upload },
-  { title: 'Reviews', url: '/admin/reviews', icon: Star },
+  { title: 'Users Comments', url: '/admin/reviews', icon: Star },
   { title: 'Newsletter', url: '/admin/newsletter', icon: Mail },
   { title: 'Users', url: '/admin/users', icon: Users },
   { title: 'Login History', url: '/admin/login-history', icon: History },

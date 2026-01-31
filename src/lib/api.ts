@@ -510,6 +510,14 @@ class ApiClient {
     return this.request<{ ratings: any[] }>('/api/admin/ratings');
   }
 
+  async getAdminComments() {
+    return this.request<{ comments: any[] }>('/api/admin/comments');
+  }
+
+  async deleteAdminComment(id: string) {
+    return this.request(`/api/admin/comments/${id}`, { method: 'DELETE' });
+  }
+
   async createCategory(category: { name: string; slug?: string; description?: string }) {
     return this.request<{ category: any }>('/api/categories', {
       method: 'POST',

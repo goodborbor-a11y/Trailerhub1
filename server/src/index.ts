@@ -1343,6 +1343,52 @@ app.post('/api/comments/:id/like', optionalAuth, async (req: AuthRequest, res: R
   }
 });
 
+// Admin: Get all comments
+app.get('/api/admin/comments', authenticateToken, isAdmin, async (req: AuthRequest, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  try {
+    const comments = getLocalComments();
+
+    // Sort by newest first
+    comments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    // Map to frontend format
+    const formattedComments = comments.map(c => ({
+      ...c,
+      like_count: c.likes ? c.likes.length : 0,
+      reply_count: comments.filter(r => r.parent_comment_id === c.id).length
+    }));
+
+    res.json({ comments: formattedComments });
+  } catch (error: any) {
+    console.error('Get admin comments error:', error);
+    res.status(500).json({ error: error.message || 'Server error' });
+  }
+});
+
+// Admin: Delete comment
+app.delete('/api/admin/comments/:id', authenticateToken, isAdmin, async (req: AuthRequest, res: Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  try {
+    const { id } = req.params;
+    const comments = getLocalComments();
+
+    // Filter out the comment AND its replies
+    const newComments = comments.filter(c => c.id !== id && c.parent_comment_id !== id);
+
+    if (comments.length === newComments.length) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    saveLocalComments(newComments);
+
+    res.json({ message: 'Comment deleted successfully' });
+  } catch (error: any) {
+    console.error('Delete admin comment error:', error);
+    res.status(500).json({ error: error.message || 'Server error' });
+  }
+});
+
 // ===========================================
 // CATEGORIES ROUTES
 // ===========================================
