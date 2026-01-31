@@ -221,7 +221,14 @@ export const Comments = ({ movieId, movieTitle }: CommentsProps) => {
       });
 
       setNewCommentContent('');
-      fetchComments(); // Refresh comments
+
+      // Optimistically add the new comment to the list if returned by API
+      if (result.data?.comment) {
+        setComments(prev => [result.data.comment, ...prev]);
+      } else {
+        // Fallback to fetch if no comment returned
+        fetchComments();
+      }
     } catch (error: any) {
       console.error('Error posting comment:', error);
       toast({
