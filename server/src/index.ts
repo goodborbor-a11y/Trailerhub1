@@ -1717,7 +1717,6 @@ app.get('/api/admin/stats', authenticateToken, isAdmin, async (req: AuthRequest,
 
     // Get real counts from database
     const movieCountResult = await pool.query('SELECT COUNT(*) FROM movies');
-    const reviewCountResult = await pool.query('SELECT COUNT(*) FROM ratings');
     const userCountResult = await pool.query('SELECT COUNT(*) FROM users');
     const subscriberCountResult = await pool.query('SELECT COUNT(*) FROM newsletter_signups');
 
@@ -1725,9 +1724,12 @@ app.get('/api/admin/stats', authenticateToken, isAdmin, async (req: AuthRequest,
     const localMovies = getLocalMovies();
     const totalMovies = parseInt(movieCountResult.rows[0].count) + localMovies.length;
 
+    // Get comments count
+    const comments = getLocalComments();
+
     res.json({
       movies: totalMovies,
-      reviews: parseInt(reviewCountResult.rows[0].count),
+      comments: comments.length,
       subscribers: parseInt(subscriberCountResult.rows[0].count),
       users: parseInt(userCountResult.rows[0].count)
     });

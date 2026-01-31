@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Film, Star, Mail, Users, ArrowLeft } from 'lucide-react';
+import { Film, Star, Mail, Users, ArrowLeft, MessageSquare } from 'lucide-react';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
 interface DashboardStats {
   movies: number;
-  reviews: number;
+  comments: number;
   subscribers: number;
   users: number;
 }
@@ -17,7 +17,7 @@ interface DashboardStats {
 const AdminDashboard = () => {
   const [stats, setStats] = useState<DashboardStats>({
     movies: 0,
-    reviews: 0,
+    comments: 0,
     subscribers: 0,
     users: 0,
   });
@@ -30,20 +30,20 @@ const AdminDashboard = () => {
         const result = await api.getAdminStats();
         if (result.error) {
           console.error('Admin stats error:', result.error);
-          toast({ 
-            title: 'Error', 
-            description: result.error || 'Failed to load stats', 
-            variant: 'destructive' 
+          toast({
+            title: 'Error',
+            description: result.error || 'Failed to load stats',
+            variant: 'destructive'
           });
         } else if (result.data) {
           setStats(result.data);
         }
       } catch (error: any) {
         console.error('Error fetching stats:', error);
-        toast({ 
-          title: 'Error', 
-          description: error.message || 'Failed to load stats', 
-          variant: 'destructive' 
+        toast({
+          title: 'Error',
+          description: error.message || 'Failed to load stats',
+          variant: 'destructive'
         });
       } finally {
         setLoading(false);
@@ -55,7 +55,7 @@ const AdminDashboard = () => {
 
   const statCards = [
     { title: 'Movies', value: stats.movies, icon: Film, href: '/admin/movies', color: 'text-blue-500' },
-    { title: 'Reviews', value: stats.reviews, icon: Star, href: '/admin/reviews', color: 'text-yellow-500' },
+    { title: 'Comments', value: stats.comments, icon: MessageSquare, href: '/admin/reviews', color: 'text-yellow-500' },
     { title: 'Subscribers', value: stats.subscribers, icon: Mail, href: '/admin/newsletter', color: 'text-green-500' },
     { title: 'Users', value: stats.users, icon: Users, href: '/admin/users', color: 'text-purple-500' },
   ];

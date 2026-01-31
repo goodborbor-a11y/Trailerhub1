@@ -484,7 +484,7 @@ class ApiClient {
 
   // Admin methods
   async getAdminStats() {
-    return this.request<{ movies: number; reviews: number; subscribers: number; users: number }>('/api/admin/stats');
+    return this.request<{ movies: number; comments: number; subscribers: number; users: number }>('/api/admin/stats');
   }
 
   async getAdminUsers() {
