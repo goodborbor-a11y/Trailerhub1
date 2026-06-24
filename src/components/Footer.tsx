@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Film } from "lucide-react";
 import { NewsletterSignup } from "./NewsletterSignup";
 import api from "@/lib/api";
@@ -62,6 +63,10 @@ export const Footer = () => {
         <div className="mt-8 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center">
             {copyrightText || `© ${new Date().getFullYear()} TrailersHub. All rights reserved.`}
+            {" · "}
+            <Link to="/privacy" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
           </p>
         </div>
       </div>
