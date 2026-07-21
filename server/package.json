@@ -7,7 +7,10 @@
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
-    "lint": "eslint src/**/*.ts"
+    "test:seo": "npm run build && node dist/seo.test.js",
+    "lint": "eslint src/**/*.ts",
+    "auto-import": "ts-node src/tmdb-auto-import.ts",
+    "auto-import:dry": "ts-node src/tmdb-auto-import.ts --dry-run"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

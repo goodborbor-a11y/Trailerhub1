@@ -8,6 +8,9 @@ interface SEOHeadProps {
 
 export const SEOHead = ({ title, description, canonical }: SEOHeadProps) => {
   const fullTitle = title.includes('TrailersHub') ? title : `${title} | TrailersHub`;
+  const canonicalUrl = canonical || (typeof window !== 'undefined'
+    ? `https://trailershub.org${window.location.pathname}`
+    : 'https://trailershub.org/');
 
   return (
     <Helmet>
@@ -20,7 +23,7 @@ export const SEOHead = ({ title, description, canonical }: SEOHeadProps) => {
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      {canonical && <link rel="canonical" href={canonical} />}
+      <link rel="canonical" href={canonicalUrl} />
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",

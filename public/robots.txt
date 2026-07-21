@@ -13,5 +13,10 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /auth
+Disallow: /watchlist
+Disallow: /favorites
+Disallow: /my-reviews
 
 Sitemap: https://trailershub.org/sitemap.xml

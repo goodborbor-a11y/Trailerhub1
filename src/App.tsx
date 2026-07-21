@@ -20,6 +20,9 @@ import Upcoming from "./pages/Upcoming";
 import Trending from "./pages/Trending";
 import Categories from "./pages/Categories";
 import Watch from "./pages/Watch";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import DeadCityPrivacyPolicy from "./pages/dead-city/DeadCityPrivacyPolicy";
+import DeadCityTerms from "./pages/dead-city/DeadCityTerms";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
@@ -124,6 +127,9 @@ const App = () => {
                     <Route path="/trending" element={<Trending />} />
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/watch/:id" element={<Watch />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/dead-city/privacy-policy" element={<DeadCityPrivacyPolicy />} />
+                    <Route path="/dead-city/terms-and-conditions" element={<DeadCityTerms />} />
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/analytics" element={<AdminAnalytics />} />
                     <Route path="/admin/visitors" element={<AdminVisitors />} />
@@ -131,7 +137,7 @@ const App = () => {
                     <Route path="/admin/tmdb-import" element={<AdminTMDBImport />} />
                     <Route path="/admin/categories" element={<AdminCategories />} />
                     <Route path="/admin/bulk-import" element={<AdminBulkImport />} />
-                    <Route path="/admin/reviews" element={<AdminReviews />} />
+                    <Route path="/admin/comments" element={<AdminReviews />} />
                     <Route path="/admin/newsletter" element={<AdminNewsletter />} />
                     <Route path="/admin/users" element={<AdminUsers />} />
                     <Route path="/admin/login-history" element={<AdminLoginHistory />} />

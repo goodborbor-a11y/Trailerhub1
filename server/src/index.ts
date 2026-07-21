@@ -12,6 +12,7 @@ import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
 import sharp from 'sharp';
 import { createHash } from 'crypto';
+import { isKnownSpaPath, MovieRecord, readMovies, renderSeoHtml, renderSitemap } from './seo';
 
 // Load environment variables
 // Try multiple paths for flexibility (local dev vs Docker)
@@ -378,11 +379,14 @@ const isAdmin = async (req: AuthRequest, res: Response, next: NextFunction) => {
     // 1. Check Database (user_roles table)
     // Wrap in try/catch specifically for the query to prevent 500 crash if table missing
     try {
-      const dbResult = await pool.query('SELECT role FROM user_roles WHERE user_id = $1', [req.user.id]);
-      if (dbResult.rows.length > 0) {
-        const userRole = dbResult.rows[0].role;
-        if (userRole === 'admin') {
-          return next();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(req.user.id);
+      if (isUuid) {
+        const dbResult = await pool.query('SELECT role FROM user_roles WHERE user_id = $1', [req.user.id]);
+        if (dbResult.rows.length > 0) {
+          const userRole = dbResult.rows[0].role;
+          if (userRole === 'admin') {
+            return next();
+          }
         }
       }
     } catch (dbErr) {
@@ -2507,31 +2511,55 @@ app.get('/favicon.ico', async (req: Request, res: Response) => {
 // START SERVER
 // ===========================================
 
+const frontendIndexPath = path.join(__dirname, '../../dist/index.html');
+
+const getSeoMovies = async (): Promise<MovieRecord[]> => {
+  const localMovies = readMovies(MOVIES_FILE);
+  try {
+    const result = await pool.query('SELECT * FROM movies');
+    const merged = new Map(localMovies.map(movie => [String(movie.id), movie]));
+    for (const movie of result.rows as MovieRecord[]) {
+      merged.set(String(movie.id), { ...merged.get(String(movie.id)), ...movie });
+    }
+    return [...merged.values()];
+  } catch (error) {
+    console.warn('[SEO] Database unavailable; rendering local movie catalogue.', error);
+    return localMovies;
+  }
+};
+
+const sendSeoPage = async (req: Request, res: Response) => {
+  if (!fs.existsSync(frontendIndexPath)) {
+    return res.status(404).send('Frontend not found. Ensure build was successful.');
+  }
+  const movies = await getSeoMovies();
+  if (!isKnownSpaPath(req.path, movies)) {
+    return res.status(404).type('html').send(renderSeoHtml(fs.readFileSync(frontendIndexPath, 'utf8'), req.path, movies));
+  }
+  res.type('html').send(renderSeoHtml(fs.readFileSync(frontendIndexPath, 'utf8'), req.path, movies));
+};
+
+app.get('/sitemap.xml', async (_req: Request, res: Response) => {
+  res.type('application/xml').send(renderSitemap(await getSeoMovies()));
+});
+
 // Explicitly serve index.html for admin routes to support SPA matching
 app.get(['/admin', '/admin/*'], (req: Request, res: Response) => {
-  const indexPath = path.join(__dirname, '../../dist/index.html');
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).send('Frontend not found. Ensure build was successful.');
-  }
+  sendSeoPage(req, res);
 });
 
 // Serve static files from the 'dist' directory (Frontend)
-app.use(express.static(path.join(__dirname, '../../dist')));
+// Let the SEO-aware SPA handler render index.html, including for `/`.
+// Static assets are still served normally, but Express must not auto-serve
+// dist/index.html before route-specific metadata and crawler content are added.
+app.use(express.static(path.join(__dirname, '../../dist'), { index: false }));
 
 // Serve uploaded user content
 app.use('/uploads', express.static(uploadDir));
 
 // Handle SPA routing: return index.html for any unknown GET route
 app.get('*', (req: Request, res: Response) => {
-  const indexPath = path.join(__dirname, '../../dist/index.html');
-  if (fs.existsSync(indexPath)) {
-    res.sendFile(indexPath);
-  } else {
-    // If frontend backend build doesn't have dist yet (dev mode)
-    res.status(404).send('Frontend not found. Ensure build was successful.');
-  }
+  sendSeoPage(req, res);
 });
 
 // Final catch-all for any other routes (including POST/PUT/DELETE)
@@ -2561,4 +2589,3 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 export default app;
-
