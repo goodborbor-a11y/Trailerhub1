@@ -113,7 +113,7 @@ const movieDescription = (movie: MovieRecord): string => {
   return `Watch the official trailer for ${movie.title}${year} and discover more${category} movie trailers on TrailersHub.`;
 };
 
-export const renderSeoHtml = (template: string, pathname: string, movies: MovieRecord[]): string => {
+export const renderSeoHtml = (template: string, pathname: string, movies: MovieRecord[], nonce = ''): string => {
   const privatePage = PRIVATE_PREFIXES.some(prefix => pathname === prefix || pathname.startsWith(`${prefix}/`));
   let page = PUBLIC_PAGES[pathname];
   let movie: MovieRecord | undefined;
@@ -184,7 +184,7 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
       `<meta name="twitter:title" content="${escapeHtml(page.title)}" />`,
       `<meta name="twitter:description" content="${escapeHtml(page.description)}" />`,
       `<meta name="twitter:image" content="${escapeHtml(image)}" />`,
-      `<script type="application/ld+json">${safeJson(schema)}</script>`,
+      `<script type="application/ld+json"${nonce ? ` nonce="${escapeHtml(nonce)}"` : ''}>${safeJson(schema)}</script>`,
       '</head>',
     ].join('\n'))
     .replace('<div id="root"></div>', `<div id="root">${fallback}</div>`);

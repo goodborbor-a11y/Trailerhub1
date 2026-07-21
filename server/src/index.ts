@@ -11,7 +11,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
 import sharp from 'sharp';
-import { createHash } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { isKnownSpaPath, MovieRecord, readMovies, renderSeoHtml, renderSitemap } from './seo';
 
 // Load environment variables
@@ -45,12 +45,23 @@ const googleOAuthClient = new OAuth2Client(
   `${process.env.BACKEND_URL || 'http://localhost:3001'}/auth/google/callback`
 );
 
+// Give each response a unique CSP nonce. The SEO renderer applies it to the
+// route-specific JSON-LD script, allowing that script without unsafe-inline.
+app.use((_req, res, next) => {
+  res.locals.cspNonce = randomBytes(16).toString('base64');
+  next();
+});
+
 // Middleware
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       "default-src": ["'self'"],
-      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://static.cloudflareinsights.com"],
+      "script-src": [
+        "'self'",
+        (_req, res) => `'nonce-${(res as Response).locals.cspNonce}'`,
+        "https://static.cloudflareinsights.com",
+      ],
       "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       "img-src": ["'self'", "data:", "blob:", "https://i.ytimg.com", "https://image.tmdb.org", "https://*.tmdb.org", "https://trailershub.org"],
       "frame-src": ["'self'", "https://www.youtube.com", "https://www.youtube-nocookie.com", "https://*.youtube.com"],
@@ -2534,9 +2545,9 @@ const sendSeoPage = async (req: Request, res: Response) => {
   }
   const movies = await getSeoMovies();
   if (!isKnownSpaPath(req.path, movies)) {
-    return res.status(404).type('html').send(renderSeoHtml(fs.readFileSync(frontendIndexPath, 'utf8'), req.path, movies));
+    return res.status(404).type('html').send(renderSeoHtml(fs.readFileSync(frontendIndexPath, 'utf8'), req.path, movies, res.locals.cspNonce));
   }
-  res.type('html').send(renderSeoHtml(fs.readFileSync(frontendIndexPath, 'utf8'), req.path, movies));
+  res.type('html').send(renderSeoHtml(fs.readFileSync(frontendIndexPath, 'utf8'), req.path, movies, res.locals.cspNonce));
 };
 
 app.get('/sitemap.xml', async (_req: Request, res: Response) => {

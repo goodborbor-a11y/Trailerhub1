@@ -24,21 +24,6 @@ export const SEOHead = ({ title, description, canonical }: SEOHeadProps) => {
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <link rel="canonical" href={canonicalUrl} />
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "TrailersHub",
-          "alternateName": ["TrailerHub"],
-          "url": "https://trailershub.org",
-          "description": "Discover the latest movie trailers from Hollywood, Nollywood, Bollywood, K-Dramas, and more in HD.",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://trailershub.org/search?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        })}
-      </script>
     </Helmet>
   );
 };

@@ -10,11 +10,12 @@ const movies = readMovies(moviesPath);
 
 assert(movies.length > 0, 'expected movie fixtures');
 
-const home = renderSeoHtml(template, '/', movies);
+const home = renderSeoHtml(template, '/', movies, 'test-nonce');
 assert(home.includes('<h1>Latest Movie Trailers Worldwide</h1>'));
 assert(home.includes('<link rel="canonical" href="https://trailershub.org/" />'));
 assert(home.includes('<meta name="robots" content="index, follow'));
 assert(home.includes('/watch/1'));
+assert(home.includes('<script type="application/ld+json" nonce="test-nonce">'));
 
 const movie = renderSeoHtml(template, '/watch/1', movies);
 assert(movie.includes('<title>Inception (2010) Official Trailer | TrailersHub</title>'));
