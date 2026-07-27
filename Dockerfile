@@ -54,10 +54,13 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy built frontend
 COPY --from=frontend-builder /app/dist ./dist
 
-# Copy backend (including compiled JS and node_modules)
+# Install backend runtime dependencies from the lockfile. Development tools stay
+# in the builder stage and are never copied into the production image.
+COPY server/package.json server/package-lock.json ./server/
+RUN cd server && npm ci --omit=dev && npm cache clean --force
+
+# Copy compiled backend output and runtime data.
 COPY --from=backend-builder /app/server/dist ./server/dist
-COPY --from=backend-builder /app/server/node_modules ./server/node_modules
-COPY server/package.json ./server/
 COPY server/data ./server/data
 
 # Create uploads directory
