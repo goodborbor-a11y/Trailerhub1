@@ -4,6 +4,9 @@ server/node_modules
 server/dist
 .git
 .env
+.env.*
+!.env.example
+**/google-play-verifier.json
 *.md
 Dockerfile
 docker-compose.yml

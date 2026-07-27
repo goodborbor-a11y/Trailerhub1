@@ -13,14 +13,57 @@ import { OAuth2Client } from 'google-auth-library';
 import sharp from 'sharp';
 import { createHash, randomBytes } from 'crypto';
 import { isKnownSpaPath, MovieRecord, readMovies, renderSeoHtml, renderSitemap } from './seo';
+import { createDeadCityBillingRouter } from './deadCityBilling';
+import { createAccountDeletionRouter } from './account-deletion';
 
 // Load environment variables
 // Try multiple paths for flexibility (local dev vs Docker)
 dotenv.config({ path: '../.env' });
 dotenv.config(); // Also try default .env in current directory
 
+function requireProductionConfig(): void {
+  if (process.env.NODE_ENV !== 'production') return;
+  const required = [
+    'DATABASE_URL',
+    'JWT_SECRET',
+    'DEAD_CITY_UNITY_PROJECT_ID',
+    'DEAD_CITY_UNITY_ENVIRONMENT_ID',
+    'DEAD_CITY_UNITY_ENVIRONMENT_NAME',
+    'DEAD_CITY_GOOGLE_SERVICE_ACCOUNT_FILE',
+    'DEAD_CITY_UGS_PROJECT_ID',
+    'DEAD_CITY_UGS_ENVIRONMENT_ID',
+    'DEAD_CITY_UGS_KEY_ID',
+    'DEAD_CITY_UGS_SECRET_KEY',
+    'DEAD_CITY_GOOGLE_CLIENT_ID',
+    'DEAD_CITY_UNITY_GOOGLE_PROVIDER_IDS',
+    'DEAD_CITY_DELETION_PEPPER',
+    'DEAD_CITY_SMTP_HOST',
+    'DEAD_CITY_SMTP_USER',
+    'DEAD_CITY_SMTP_PASSWORD',
+    'DEAD_CITY_EMAIL_FROM',
+  ];
+  const missing = required.filter(name => !process.env[name]?.trim());
+  const jwtSecret = process.env.JWT_SECRET || '';
+  const weakJwt = jwtSecret.length < 32 || /^(change|default|dev|test|your[_-])/i.test(jwtSecret);
+  const credentialFile = process.env.DEAD_CITY_GOOGLE_SERVICE_ACCOUNT_FILE || '';
+  const invalidCredentialFile = credentialFile !== '/run/secrets/google-play-verifier.json'
+    || !fs.existsSync(credentialFile);
+  if (missing.length > 0 || weakJwt || invalidCredentialFile) {
+    console.error('Production configuration validation failed.');
+    process.exit(1);
+  }
+}
+
+requireProductionConfig();
+
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Only the loopback host and the private Compose network may supply forwarded
+// client identity. Nginx overwrites X-Forwarded-For on the billing endpoint.
+app.set('trust proxy', (ip: string) =>
+  ip === '127.0.0.1' || ip === '::1' || ip.startsWith('172.19.') || ip.startsWith('::ffff:172.19.')
+);
 
 // Database connection
 const pool = new Pool({
@@ -32,7 +75,7 @@ pool.on('error', (err) => {
 });
 
 // JWT Secret
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
 // Google OAuth Client
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
@@ -94,7 +137,14 @@ app.use(cors({
   },
   credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ limit: '128kb', strict: true }));
+app.use((error: unknown, _req: Request, res: Response, next: NextFunction) => {
+  const typed = error as { type?: string };
+  if (typed?.type === 'entity.too.large')
+    return res.status(413).json({ ok: false, message: 'Request body is too large.' });
+  if (error) return next(error);
+  return next();
+});
 
 // Request logger for debugging
 app.use((req, res, next) => {
@@ -109,6 +159,12 @@ app.use((req, res, next) => {
 });
 
 app.use(cookieParser());
+
+app.use('/api/dead-city/account-deletion', createAccountDeletionRouter(pool));
+
+// Dead City purchase fulfillment: Unity identity + Google Play verification +
+// an idempotent purchase-token ledger. This route must precede the SPA catch-all.
+app.use('/api/dead-city', createDeadCityBillingRouter(pool));
 
 // Page view tracking middleware (non-blocking)
 app.use(async (req: Request, res: Response, next: NextFunction) => {

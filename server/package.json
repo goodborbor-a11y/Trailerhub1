@@ -8,6 +8,7 @@
     "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
     "test:seo": "npm run build && node dist/seo.test.js",
+    "test:billing": "npm run build && node dist/deadCityBilling.test.js",
     "lint": "eslint src/**/*.ts",
     "auto-import": "ts-node src/tmdb-auto-import.ts",
     "auto-import:dry": "ts-node src/tmdb-auto-import.ts --dry-run"
@@ -22,6 +23,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "9.0.3",
     "pg": "^8.11.3",
     "sharp": "^0.33.0"
   },
@@ -33,6 +35,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.10.6",
+    "@types/nodemailer": "7.0.12",
     "@types/pg": "^8.10.9",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
