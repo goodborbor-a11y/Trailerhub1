@@ -6,6 +6,9 @@
   "engines": {
     "node": ">=24 <25"
   },
+  "overrides": {
+    "path-to-regexp": "0.1.13"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
