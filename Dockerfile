@@ -3,7 +3,7 @@
 # ===========================================
 
 # Stage 1: Build the frontend
-FROM node:20-alpine AS frontend-builder
+FROM node:24.18.0-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS frontend-builder
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # Stage 2: Build the backend
-FROM node:20-alpine AS backend-builder
+FROM node:24.18.0-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS backend-builder
 
 WORKDIR /app/server
 
@@ -31,7 +31,7 @@ COPY server/package*.json ./
 COPY server/tsconfig.json ./
 
 # Install all dependencies (including dev dependencies for TypeScript)
-RUN npm install
+RUN npm ci
 
 # Copy server source
 COPY server/src ./src
@@ -40,7 +40,7 @@ COPY server/src ./src
 RUN npm run build
 
 # Stage 3: Production image
-FROM node:20-alpine AS production
+FROM node:24.18.0-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS production
 
 WORKDIR /app
 
