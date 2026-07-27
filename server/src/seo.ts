@@ -23,6 +23,7 @@ type PageSeo = {
   description: string;
   heading: string;
   noindex?: boolean;
+  canonicalPath?: string;
 };
 
 const PUBLIC_PAGES: Record<string, PageSeo> = {
@@ -56,6 +57,18 @@ const PUBLIC_PAGES: Record<string, PageSeo> = {
     description: 'Learn how TrailersHub collects, uses and protects personal information.',
     heading: 'TrailersHub Privacy Policy',
   },
+  '/dead-city': {
+    title: 'Dead City: Apocalypse — Official Game Guide',
+    description: 'Explore Dead City: Apocalypse, learn the basics, master advanced zombie-survival tactics, manage heroes and graphics settings, and access official support and legal information.',
+    heading: 'Dead City: Apocalypse',
+    canonicalPath: '/dead-city/',
+  },
+  '/dead-city/': {
+    title: 'Dead City: Apocalypse — Official Game Guide',
+    description: 'Explore Dead City: Apocalypse, learn the basics, master advanced zombie-survival tactics, manage heroes and graphics settings, and access official support and legal information.',
+    heading: 'Dead City: Apocalypse',
+    canonicalPath: '/dead-city/',
+  },
   '/dead-city/privacy-policy': {
     title: 'Privacy Policy | Dead City: Apocalypse',
     description: 'Privacy policy for the Android game Dead City: Apocalypse.',
@@ -78,6 +91,45 @@ const escapeHtml = (value: unknown): string => String(value ?? '')
   .replace(/'/g, '&#039;');
 
 const safeJson = (value: unknown): string => JSON.stringify(value).replace(/</g, '\\u003c');
+
+const isDeadCityPath = (pathname: string): boolean =>
+  pathname === '/dead-city' || pathname === '/dead-city/' || pathname.startsWith('/dead-city/');
+
+const DEAD_CITY_INITIAL_CSS = `<style id="dead-city-initial-css">
+html{background:#03070a;color-scheme:dark}
+body{margin:0;background:#03070a;color:#eef7f6}
+#root{min-height:100vh;background:#03070a}
+.dc-initial{box-sizing:border-box;min-height:100vh;overflow:hidden;background:radial-gradient(ellipse 55% 50% at 78% 42%,rgba(25,170,169,.17),transparent 70%),linear-gradient(115deg,#03070a 35%,#071117 70%,#020506);color:#eef7f6;font-family:Inter,Arial,sans-serif}
+.dc-initial *{box-sizing:border-box}
+.dc-initial__header{height:84px;display:flex;align-items:center;max-width:1240px;margin:auto;padding:0 28px;border-bottom:1px solid rgba(104,205,207,.17)}
+.dc-initial__brand{display:flex;align-items:center;gap:12px;color:#eef7f6;text-decoration:none;text-transform:uppercase}
+.dc-initial__mark{width:40px;height:40px;display:grid;place-items:center;border:1px solid rgba(100,228,224,.45);background:rgba(25,170,169,.1);color:#64e4e0;font-size:20px;transform:rotate(45deg)}
+.dc-initial__mark span{transform:rotate(-45deg)}
+.dc-initial__brand b,.dc-initial__brand small{display:block;line-height:1}
+.dc-initial__brand b{font-size:20px;letter-spacing:.13em}
+.dc-initial__brand small{margin-top:5px;color:#64e4e0;font-size:9px;letter-spacing:.28em}
+.dc-initial__main{min-height:calc(100vh - 84px);display:grid;align-content:center;max-width:1240px;margin:auto;padding:64px 28px 96px}
+.dc-initial__eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 16px;color:#64e4e0;font-size:11px;font-weight:800;letter-spacing:.22em;text-transform:uppercase}
+.dc-initial__eyebrow:before{content:"";width:32px;height:2px;background:#ef5b47}
+.dc-initial h1{max-width:800px;margin:0;color:#eef7f6;font:400 clamp(48px,8vw,102px)/.92 Impact,"Arial Narrow",sans-serif;letter-spacing:.025em;text-transform:uppercase;text-shadow:0 8px 40px #000}
+.dc-initial--legal h1{font-size:clamp(42px,7vw,78px)}
+.dc-initial__copy{max-width:720px;margin:24px 0 0;color:#a6b8ba;font-size:16px;line-height:1.7}
+.dc-initial__status{width:min(100%,420px);height:52px;margin-top:32px;border:1px solid rgba(100,228,224,.28);border-left:3px solid #64e4e0;background:rgba(6,20,25,.75)}
+.dc-initial__line{width:min(62%,260px);height:8px;margin:14px 16px 0;background:rgba(100,228,224,.18)}
+.dc-initial__line+ .dc-initial__line{width:min(42%,180px);margin-top:8px;background:rgba(145,166,169,.12)}
+.dc-initial__back{display:inline-flex;align-items:center;min-height:44px;margin-bottom:28px;color:#64e4e0;text-decoration:none}
+@media(max-width:600px){.dc-initial__header{height:72px;padding:0 20px}.dc-initial__main{min-height:calc(100vh - 72px);padding:52px 20px 72px}.dc-initial h1{font-size:clamp(40px,13vw,56px)}.dc-initial--legal h1{font-size:clamp(34px,11vw,48px)}.dc-initial__copy{font-size:15px}}
+</style>`;
+
+const renderDeadCityInitialShell = (pathname: string, page: PageSeo): string => {
+  const legalPage = pathname === '/dead-city/privacy-policy' || pathname === '/dead-city/terms-and-conditions';
+  const label = pathname === '/dead-city/privacy-policy'
+    ? 'Privacy Policy'
+    : pathname === '/dead-city/terms-and-conditions'
+      ? 'Terms and Conditions'
+      : 'Official game guide';
+  return `<div class="dc-initial${legalPage ? ' dc-initial--legal' : ''}" data-initial-shell="dead-city"><header class="dc-initial__header"><a class="dc-initial__brand" href="/dead-city/" aria-label="Dead City: Apocalypse home"><span class="dc-initial__mark" aria-hidden="true"><span>☠</span></span><span><b>Dead City</b><small>Apocalypse</small></span></a></header><main class="dc-initial__main">${legalPage ? '<a class="dc-initial__back" href="/dead-city/">← Back to Dead City</a>' : ''}<p class="dc-initial__eyebrow">${escapeHtml(label)}</p><h1>${escapeHtml(page.heading)}</h1><p class="dc-initial__copy">${escapeHtml(page.description)}</p><div class="dc-initial__status" aria-label="Loading Dead City content"><div class="dc-initial__line"></div><div class="dc-initial__line"></div></div></main></div>`;
+};
 
 export const readMovies = (moviesFile: string): MovieRecord[] => {
   try {
@@ -115,6 +167,7 @@ const movieDescription = (movie: MovieRecord): string => {
 
 export const renderSeoHtml = (template: string, pathname: string, movies: MovieRecord[], nonce = ''): string => {
   const privatePage = PRIVATE_PREFIXES.some(prefix => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  const deadCityPage = isDeadCityPath(pathname);
   let page = PUBLIC_PAGES[pathname];
   let movie: MovieRecord | undefined;
 
@@ -136,7 +189,7 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
       : { title: 'Page Not Found | TrailersHub', description: 'The requested page could not be found.', heading: 'Page Not Found', noindex: true };
   }
 
-  const canonical = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
+  const canonical = `${SITE_URL}${page.canonicalPath || (pathname === '/' ? '/' : pathname)}`;
   const robots = page.noindex || privatePage ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
   const image = movie?.poster_url ? (movie.poster_url.startsWith('http') ? movie.poster_url : `${SITE_URL}${movie.poster_url}`) : `${SITE_URL}/favicon.jpg`;
   const schema = movie ? {
@@ -161,17 +214,22 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
     description: page.description,
   };
 
-  const visibleMovies = movie ? [movie] : selectMovies(pathname, movies);
+  const visibleMovies = deadCityPage ? [] : movie ? [movie] : selectMovies(pathname, movies);
   const links = visibleMovies.map(item => {
     const url = `/watch/${encodeURIComponent(String(item.id))}`;
     const details = [item.year, item.category].filter(Boolean).join(' · ');
     return `<li><a href="${url}">${escapeHtml(item.title)}</a>${details ? ` <span>${escapeHtml(details)}</span>` : ''}</li>`;
   }).join('');
-  const fallback = `<main id="crawler-content"><h1>${escapeHtml(page.heading)}</h1><p>${escapeHtml(page.description)}</p>${links ? `<nav aria-label="Movie trailers"><ul>${links}</ul></nav>` : ''}</main>`;
+  const fallback = deadCityPage
+    ? renderDeadCityInitialShell(pathname, page)
+    : `<main id="crawler-content"><h1>${escapeHtml(page.heading)}</h1><p>${escapeHtml(page.description)}</p>${links ? `<nav aria-label="Movie trailers"><ul>${links}</ul></nav>` : ''}</main>`;
 
   return template
     .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(page.title)}</title>`)
     .replace(/<meta\s+name="description"[\s\S]*?>/i, `<meta name="description" content="${escapeHtml(page.description)}" />`)
+    .replace(/<meta\s+name="keywords"[\s\S]*?>/i, deadCityPage
+      ? '<meta name="keywords" content="Dead City Apocalypse, zombie survival game, game guide, RockTimeMedia" />'
+      : '$&')
     .replace(/<meta\s+(?:property="og:[^"]+"|name="twitter:[^"]+")[\s\S]*?>\s*/gi, '')
     .replace('</head>', [
       `<meta name="robots" content="${robots}" />`,
@@ -179,12 +237,13 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
       `<meta property="og:title" content="${escapeHtml(page.title)}" />`,
       `<meta property="og:description" content="${escapeHtml(page.description)}" />`,
       `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
-      `<meta property="og:image" content="${escapeHtml(image)}" />`,
+      deadCityPage ? '' : `<meta property="og:image" content="${escapeHtml(image)}" />`,
       `<meta property="og:type" content="${movie ? 'video.movie' : 'website'}" />`,
       `<meta name="twitter:title" content="${escapeHtml(page.title)}" />`,
       `<meta name="twitter:description" content="${escapeHtml(page.description)}" />`,
-      `<meta name="twitter:image" content="${escapeHtml(image)}" />`,
+      deadCityPage ? '' : `<meta name="twitter:image" content="${escapeHtml(image)}" />`,
       `<script type="application/ld+json"${nonce ? ` nonce="${escapeHtml(nonce)}"` : ''}>${safeJson(schema)}</script>`,
+      deadCityPage ? DEAD_CITY_INITIAL_CSS : '',
       '</head>',
     ].join('\n'))
     .replace('<div id="root"></div>', `<div id="root">${fallback}</div>`);
@@ -192,7 +251,7 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
 
 export const renderSitemap = (movies: MovieRecord[]): string => {
   const today = new Date().toISOString().slice(0, 10);
-  const staticUrls = ['/', '/movies', '/trending', '/upcoming', '/categories', '/privacy'];
+  const staticUrls = ['/', '/movies', '/trending', '/upcoming', '/categories', '/privacy', '/dead-city/', '/dead-city/privacy-policy', '/dead-city/terms-and-conditions'];
   const entries = staticUrls.map(pathname => ({
     loc: `${SITE_URL}${pathname === '/' ? '/' : pathname}`,
     lastmod: today,

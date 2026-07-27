@@ -24,6 +24,7 @@ import Watch from "./pages/Watch";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import DeadCityPrivacyPolicy from "./pages/dead-city/DeadCityPrivacyPolicy";
 import DeadCityTerms from "./pages/dead-city/DeadCityTerms";
+import DeadCityHub from "./pages/dead-city/DeadCityHub";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
@@ -42,7 +43,21 @@ import AdminGeneralSettings from "./pages/admin/AdminGeneralSettings";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const DeadCityApp = () => (
+  <HelmetProvider>
+    <BrowserRouter>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/dead-city" element={<DeadCityHub />} />
+        <Route path="/dead-city/privacy-policy" element={<DeadCityPrivacyPolicy />} />
+        <Route path="/dead-city/terms-and-conditions" element={<DeadCityTerms />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  </HelmetProvider>
+);
+
+const TrailerHubApp = () => {
   const [faviconUrls, setFaviconUrls] = useState<Record<string, string> | null>(null);
 
   // Debug: Log that routes are being registered
@@ -130,8 +145,6 @@ const App = () => {
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/watch/:id" element={<Watch />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
-                    <Route path="/dead-city/privacy-policy" element={<DeadCityPrivacyPolicy />} />
-                    <Route path="/dead-city/terms-and-conditions" element={<DeadCityTerms />} />
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/analytics" element={<AdminAnalytics />} />
                     <Route path="/admin/visitors" element={<AdminVisitors />} />
@@ -158,5 +171,11 @@ const App = () => {
     </QueryClientProvider>
   );
 };
+
+const App = () => (
+  window.location.pathname === "/dead-city" || window.location.pathname.startsWith("/dead-city/")
+    ? <DeadCityApp />
+    : <TrailerHubApp />
+);
 
 export default App;
