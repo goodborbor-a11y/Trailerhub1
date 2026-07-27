@@ -12,6 +12,7 @@
     "build": "tsc",
     "test:seo": "npm run build && node dist/seo.test.js",
     "test:billing": "npm run build && node dist/deadCityBilling.test.js",
+    "test:sharp": "npm run build && node dist/imageSecurity.test.js",
     "lint": "eslint src/**/*.ts",
     "auto-import": "tsx src/tmdb-auto-import.ts",
     "auto-import:dry": "tsx src/tmdb-auto-import.ts --dry-run"
@@ -28,7 +29,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "9.0.3",
     "pg": "^8.11.3",
-    "sharp": "^0.33.0"
+    "sharp": "0.35.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

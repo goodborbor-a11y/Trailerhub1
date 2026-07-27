@@ -29,6 +29,7 @@ jobs:
           npm ci --prefix server
           npm --prefix server run build
           npm --prefix server run test:billing
+          npm --prefix server run test:sharp
           npm --prefix server run test:seo
 
   deploy:

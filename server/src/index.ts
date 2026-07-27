@@ -10,11 +10,11 @@ import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
-import sharp from 'sharp';
 import { createHash, randomBytes } from 'crypto';
 import { isKnownSpaPath, MovieRecord, readMovies, renderSeoHtml, renderSitemap } from './seo';
 import { createDeadCityBillingRouter } from './deadCityBilling';
 import { createAccountDeletionRouter } from './account-deletion';
+import { configuredUploadLimit, createFaviconPipeline, validateFaviconInput } from './imageSecurity';
 
 // Load environment variables
 // Try multiple paths for flexibility (local dev vs Docker)
@@ -365,7 +365,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760') }
+  limits: { fileSize: configuredUploadLimit(process.env.MAX_FILE_SIZE) }
 });
 
 // Auth Middleware
@@ -2405,7 +2405,7 @@ app.post('/api/upload/favicon', authenticateToken, isAdmin, (req: AuthRequest, r
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(400).json({ error: 'File too large. Maximum size is 10MB.' });
       }
-      return res.status(500).json({ error: err.message || 'Upload failed' });
+      return res.status(400).json({ error: 'Invalid upload.' });
     }
 
     if (!req.file) {
@@ -2413,6 +2413,8 @@ app.post('/api/upload/favicon', authenticateToken, isAdmin, (req: AuthRequest, r
     }
 
     try {
+      await validateFaviconInput(req.file.path);
+
       // Get existing favicon URLs from database to delete old files (Optional)
       let oldFaviconUrls: Record<string, string> = {};
       try {
@@ -2451,10 +2453,7 @@ app.post('/api/upload/favicon', authenticateToken, isAdmin, (req: AuthRequest, r
         const outputFilename = `favicon-${size}x${size}.png`;
         const outputPath = path.join(uploadDir, outputFilename);
 
-        await sharp(req.file.path)
-          .resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-          .png()
-          .toFile(outputPath);
+        await createFaviconPipeline(req.file.path, size).toFile(outputPath);
 
         console.log(`Generated favicon: ${outputPath}`);
         faviconUrls[`${size}x${size}`] = `/uploads/${outputFilename}`;
@@ -2482,13 +2481,13 @@ app.post('/api/upload/favicon', authenticateToken, isAdmin, (req: AuthRequest, r
         favicons: faviconUrls,
         message: 'Favicon generated and saved successfully'
       });
-    } catch (error: any) {
-      console.error('Favicon generation error:', error);
+    } catch {
+      console.warn('Favicon generation rejected an invalid or unsupported image.');
       // Clean up original file on error
       if (req.file?.path && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
-      res.status(500).json({ error: error.message || 'Failed to generate favicon' });
+      res.status(400).json({ error: 'Invalid or unsupported image.' });
     }
   });
 });
