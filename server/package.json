@@ -8,13 +8,13 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "test:seo": "npm run build && node dist/seo.test.js",
     "test:billing": "npm run build && node dist/deadCityBilling.test.js",
     "lint": "eslint src/**/*.ts",
-    "auto-import": "ts-node src/tmdb-auto-import.ts",
-    "auto-import:dry": "ts-node src/tmdb-auto-import.ts --dry-run"
+    "auto-import": "tsx src/tmdb-auto-import.ts",
+    "auto-import:dry": "tsx src/tmdb-auto-import.ts --dry-run"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -40,7 +40,7 @@
     "@types/node": "^20.10.6",
     "@types/nodemailer": "7.0.12",
     "@types/pg": "^8.10.9",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "4.23.1",
     "typescript": "^5.3.3"
   }
 }
