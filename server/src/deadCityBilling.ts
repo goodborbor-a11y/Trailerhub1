@@ -139,7 +139,7 @@ async function verifyUnityBearer(token: string): Promise<UnityClaims> {
 
 async function getGooglePurchase(purchaseToken: string): Promise<GoogleProductPurchaseV2> {
   const keyFilename = process.env.DEAD_CITY_GOOGLE_SERVICE_ACCOUNT_FILE;
-  if (keyFilename !== '/run/secrets/google-play-verifier.json')
+  if (keyFilename !== '/run/dead-city-secrets/google-play-verifier.json')
     throw new Error('Google Play verification is not configured');
   const auth = new GoogleAuth({ keyFilename, scopes: [ANDROID_PUBLISHER_SCOPE] });
   const client = await auth.getClient();

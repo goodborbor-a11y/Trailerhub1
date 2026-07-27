@@ -14,7 +14,8 @@ docker-compose.yml
 bun.lockb
 root@*
 scp
-scripts/
+scripts/*
+!scripts/dead-city-entrypoint.sh
 supabase/
 database/
 nginx/

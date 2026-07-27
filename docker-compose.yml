@@ -44,7 +44,7 @@ services:
       DEAD_CITY_UNITY_PROJECT_ID: ${DEAD_CITY_UNITY_PROJECT_ID:?DEAD_CITY_UNITY_PROJECT_ID is required}
       DEAD_CITY_UNITY_ENVIRONMENT_ID: ${DEAD_CITY_UGS_ENVIRONMENT_ID:?DEAD_CITY_UGS_ENVIRONMENT_ID is required}
       DEAD_CITY_UNITY_ENVIRONMENT_NAME: ${DEAD_CITY_UNITY_ENVIRONMENT_NAME:?DEAD_CITY_UNITY_ENVIRONMENT_NAME is required}
-      DEAD_CITY_GOOGLE_SERVICE_ACCOUNT_FILE: /run/secrets/google-play-verifier.json
+      DEAD_CITY_GOOGLE_SERVICE_ACCOUNT_FILE: /run/dead-city-secrets/google-play-verifier.json
       DEAD_CITY_UGS_PROJECT_ID: ${DEAD_CITY_UGS_PROJECT_ID:?DEAD_CITY_UGS_PROJECT_ID is required}
       DEAD_CITY_UGS_ENVIRONMENT_ID: ${DEAD_CITY_UGS_ENVIRONMENT_ID:?DEAD_CITY_UGS_ENVIRONMENT_ID is required}
       DEAD_CITY_UGS_KEY_ID: ${DEAD_CITY_UGS_KEY_ID:?DEAD_CITY_UGS_KEY_ID is required}
@@ -61,7 +61,9 @@ services:
     volumes:
       - /var/www/uploads:/var/www/uploads
       - ./server/data:/app/server/data
-      - /root/.config/dead-city/google-play-verifier.json:/run/secrets/google-play-verifier.json:ro
+      - /root/.config/dead-city/google-play-verifier.json:/run/dead-city-secrets-source/google-play-verifier.json:ro
+    tmpfs:
+      - /run/dead-city-secrets:rw,noexec,nosuid,nodev,size=1m,mode=0700,uid=0,gid=0
     ports:
       - "127.0.0.1:3001:3001"
     depends_on:

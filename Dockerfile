@@ -44,8 +44,8 @@ FROM node:24.18.0-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a
 
 WORKDIR /app
 
-# Install production dependencies
-RUN apk add --no-cache dumb-init
+# Install PID 1 signal handling and a minimal privilege-drop helper.
+RUN apk add --no-cache dumb-init su-exec
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -63,16 +63,21 @@ RUN cd server && npm ci --omit=dev && npm cache clean --force
 COPY --from=backend-builder /app/server/dist ./server/dist
 COPY server/data ./server/data
 
+# This script contains no secret. It validates and stages the read-only host
+# credential into ephemeral tmpfs before permanently dropping privileges.
+COPY scripts/dead-city-entrypoint.sh /usr/local/bin/dead-city-entrypoint
+RUN chown root:root /usr/local/bin/dead-city-entrypoint && \
+    chmod 0755 /usr/local/bin/dead-city-entrypoint
+
 # Create uploads directory
 RUN mkdir -p /var/www/uploads && chown nodejs:nodejs /var/www/uploads
 
 # Set ownership
 RUN chown -R nodejs:nodejs /app
 
-USER nodejs
-
 EXPOSE 3001
 
-# Use dumb-init for proper signal handling
-ENTRYPOINT ["dumb-init", "--"]
+# The entrypoint starts as root only to stage the credential, then execs
+# dumb-init and Node as UID/GID 1001.
+ENTRYPOINT ["/usr/local/bin/dead-city-entrypoint"]
 CMD ["node", "server/dist/index.js"]

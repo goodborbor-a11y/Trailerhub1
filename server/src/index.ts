@@ -46,7 +46,7 @@ function requireProductionConfig(): void {
   const jwtSecret = process.env.JWT_SECRET || '';
   const weakJwt = jwtSecret.length < 32 || /^(change|default|dev|test|your[_-])/i.test(jwtSecret);
   const credentialFile = process.env.DEAD_CITY_GOOGLE_SERVICE_ACCOUNT_FILE || '';
-  const invalidCredentialFile = credentialFile !== '/run/secrets/google-play-verifier.json'
+  const invalidCredentialFile = credentialFile !== '/run/dead-city-secrets/google-play-verifier.json'
     || !fs.existsSync(credentialFile);
   if (missing.length > 0 || weakJwt || invalidCredentialFile) {
     console.error('Production configuration validation failed.');
