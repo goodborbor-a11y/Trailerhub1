@@ -8,6 +8,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { PinchZoomWrapper } from "@/components/PinchZoomWrapper";
 import { FaviconInjector } from "@/components/FaviconInjector";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import Index from "./pages/Index";
@@ -116,6 +117,7 @@ const App = () => {
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
+                  <ScrollToTop />
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />

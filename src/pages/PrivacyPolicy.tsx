@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SEOHead } from "@/components/SEOHead";
 
-const CONTACT_EMAIL = "okrjjc@gmail.com";
+const CONTACT_EMAIL = "goodborbor@gmail.com";
 const LAST_UPDATED = "June 24, 2026";
 
 const PrivacyPolicy = () => {
