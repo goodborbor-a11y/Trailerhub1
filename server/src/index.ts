@@ -11,6 +11,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
 import { createHash, randomBytes } from 'crypto';
+import { spawn } from 'child_process';
 import { buildSlugIndex, baseMovieSlug, canonicalWatchPath, findMovieBySegment, isKnownSpaPath, MovieRecord, readMovies, renderSeoHtml, renderSitemap } from './seo';
 import { createDeadCityBillingRouter } from './deadCityBilling';
 import { createAccountDeletionRouter } from './account-deletion';
@@ -2658,10 +2659,71 @@ app.use((req: Request, res: Response) => {
   });
 });
 
+// ===========================================
+// SCHEDULED TMDB IMPORT
+// ===========================================
+// The catalogue used to be topped up by a host cron job. It stopped on
+// 2026-07-27 and nothing reported the failure, so the site went eight days
+// without a new trailer. Scheduling it here means the job ships with the app
+// and its output lands in the container logs alongside everything else.
+
+const IMPORT_HOUR_UTC = 4;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const runScheduledImport = () => {
+  if (!process.env.TMDB_API_KEY) {
+    console.warn('[auto-import] TMDB_API_KEY is not set; skipping run.');
+    return;
+  }
+
+  const script = path.join(__dirname, 'tmdb-auto-import.js');
+  if (!fs.existsSync(script)) {
+    console.error(`[auto-import] Script missing at ${script}; skipping run.`);
+    return;
+  }
+
+  console.log('[auto-import] Starting scheduled TMDB import...');
+  const child = spawn(process.execPath, [script, '--days=3'], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  child.stdout.on('data', chunk => process.stdout.write(`[auto-import] ${chunk}`));
+  child.stderr.on('data', chunk => process.stderr.write(`[auto-import] ${chunk}`));
+  child.on('close', code => {
+    if (code === 0) {
+      console.log('[auto-import] Import finished successfully.');
+    } else {
+      console.error(`[auto-import] Import FAILED with exit code ${code}.`);
+    }
+  });
+  child.on('error', err => console.error('[auto-import] Could not start import:', err));
+};
+
+const scheduleDailyImport = () => {
+  if (process.env.DISABLE_AUTO_IMPORT === 'true') {
+    console.log('[auto-import] Disabled via DISABLE_AUTO_IMPORT.');
+    return;
+  }
+
+  // Fire at a fixed hour rather than on an interval from boot, so redeploys
+  // do not each kick off their own import.
+  const now = new Date();
+  const next = new Date(now);
+  next.setUTCHours(IMPORT_HOUR_UTC, 0, 0, 0);
+  if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
+  const delay = next.getTime() - now.getTime();
+
+  console.log(`[auto-import] Next import scheduled for ${next.toISOString()}.`);
+  setTimeout(() => {
+    runScheduledImport();
+    setInterval(runScheduledImport, DAY_MS);
+  }, delay);
+};
+
 app.listen(PORT, () => {
   console.log(`🎬 Movie Trailers API running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Serving frontend from: ${path.join(__dirname, '../../dist')}`);
+  scheduleDailyImport();
 });
 
 // Global Error Handler
