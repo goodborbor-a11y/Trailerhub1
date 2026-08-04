@@ -93,6 +93,8 @@ import theBoysPoster from "@/assets/posters/the-boys.jpg";
 import siloPoster from "@/assets/posters/silo.jpg";
 import ringsOfPowerPoster from "@/assets/posters/rings-of-power.jpg";
 
+import { movieSlug, slugify } from "@/lib/slug";
+
 export interface Movie {
   id: string;
   title: string;
@@ -100,6 +102,8 @@ export interface Movie {
   poster: string;
   trailerUrl: string;
   genres?: string[];
+  /** Canonical URL slug, supplied by the API. Derived from title+year when absent. */
+  slug?: string;
 }
 
 export interface Category {
@@ -178,7 +182,14 @@ export const findStaticMovie = (id: string, title?: string): Movie | null => {
   const byStrippedId = allStaticMovies.find(m => m.id === id.replace(/^db-/, ''));
   if (byStrippedId) return byStrippedId;
 
-  // 3. IMPORTANT FALLBACK: Matching by Title (case insensitive)
+  // 3. Try the URL slug, so /watch/severance-2025 resolves without an API call
+  const wantedSlug = slugify(id);
+  if (wantedSlug) {
+    const bySlug = allStaticMovies.find(m => movieSlug(m) === wantedSlug);
+    if (bySlug) return bySlug;
+  }
+
+  // 4. IMPORTANT FALLBACK: Matching by Title (case insensitive)
   // This is the most reliable way when numeric IDs conflict
   if (title) {
     const normalizedTitle = title.toLowerCase().trim();

@@ -9,6 +9,7 @@ import { useUpcomingTrailers, upcomingToMovie } from "@/hooks/useUpcomingTrailer
 import { categories, tvSeriesCategory, Movie } from "@/data/movies";
 import { useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { watchHref } from "@/lib/slug";
 
 const Upcoming = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +25,7 @@ const Upcoming = () => {
   }, [searchQuery]);
 
   const handlePlayTrailer = useCallback((movie: Movie) => {
-    navigate(`/watch/${movie.id}`);
+    navigate(watchHref(movie));
   }, [navigate]);
 
   const searchResults = useMemo(() => {

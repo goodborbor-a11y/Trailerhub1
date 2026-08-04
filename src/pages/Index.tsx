@@ -18,6 +18,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { CategorySection } from "@/components/CategorySection";
 import { GenreFilter } from "@/components/GenreFilter";
+import { watchHref } from "@/lib/slug";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -185,7 +186,7 @@ const Index = () => {
 
   const handlePlayTrailer = useCallback((movie: Movie) => {
     // Navigate to watch page with movie ID
-    navigate(`/watch/${movie.id}`);
+    navigate(watchHref(movie));
   }, [navigate]);
 
   const handleCloseTrailer = useCallback(() => {

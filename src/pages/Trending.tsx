@@ -13,6 +13,7 @@ import { useUpcomingTrailers, upcomingToMovie } from "@/hooks/useUpcomingTrailer
 import { deduplicateMovies } from "@/lib/utils/movies";
 import { useMovieRatings } from "@/hooks/useMovieRatings";
 import { Flame } from "lucide-react";
+import { watchHref } from "@/lib/slug";
 
 const Trending = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,7 +89,7 @@ const Trending = () => {
 
   const handlePlayTrailer = useCallback((movie: Movie) => {
     // Navigate to watch page with movie ID
-    navigate(`/watch/${movie.id}`);
+    navigate(watchHref(movie));
   }, [navigate]);
 
   const handleCloseTrailer = useCallback(() => {

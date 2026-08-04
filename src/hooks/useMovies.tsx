@@ -13,6 +13,7 @@ export interface DatabaseMovie {
   is_trending: boolean | null;
   is_latest: boolean | null;
   genres: string[];
+  slug?: string;
 }
 
 // Convert database movie to frontend Movie format
@@ -37,6 +38,9 @@ export const toFrontendMovie = (dbMovie: DatabaseMovie): Movie => {
     poster: dbPoster || staticFallback?.poster || `https://placehold.co/300x450/1a1a2e/10b981?text=${encodeURIComponent(dbMovie.title)}`,
     trailerUrl: staticFallback?.trailerUrl || dbMovie.trailer_url,
     genres: staticFallback?.genres || dbMovie.genres || [],
+    // The server owns slug uniqueness across the whole catalogue, so prefer its
+    // value over anything derived on the client.
+    slug: dbMovie.slug,
   };
 };
 

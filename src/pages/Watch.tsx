@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, Component, ReactNode } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { watchHref } from "@/lib/slug";
 import { TrailerModal } from "@/components/TrailerModalRebuilt";
 import { Movie, Category, categories, latestTrailers, trendingTrailers, tvSeriesCategory, findStaticMovie } from "@/data/movies";
 import { Button } from "@/components/ui/button";
@@ -48,8 +49,10 @@ const isValidTrailerUrl = (url: string | null | undefined): boolean => {
 // Now imported from @/data/movies
 
 const Watch = () => {
+  // `id` is the URL segment: a title-year slug now, or a legacy movie id.
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   // For static movies, do a synchronous lookup immediately
   const staticMovie = id ? findStaticMovie(id) : null;
@@ -131,6 +134,16 @@ const Watch = () => {
 
     loadMovie();
   }, [id]);
+
+  // Rewrite legacy /watch/<id> to the slug once the movie is known. The server
+  // 301s these on a cold load; this covers in-app navigation to an old link.
+  useEffect(() => {
+    if (!movie) return;
+    const canonical = watchHref(movie);
+    if (canonical !== pathname) {
+      navigate(canonical, { replace: true });
+    }
+  }, [movie, pathname, navigate]);
 
   const handleClose = () => {
     navigate(-1); // Go back to previous page
@@ -245,7 +258,7 @@ const Watch = () => {
         movieTitle={movie.title}
         currentMovie={movie}
         onPlayTrailer={(nextMovie) => {
-          navigate(`/watch/${nextMovie.id}`);
+          navigate(watchHref(nextMovie));
         }}
       />
     </ErrorBoundary>

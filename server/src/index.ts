@@ -11,7 +11,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
 import { createHash, randomBytes } from 'crypto';
-import { isKnownSpaPath, MovieRecord, readMovies, renderSeoHtml, renderSitemap } from './seo';
+import { buildSlugIndex, baseMovieSlug, canonicalWatchPath, findMovieBySegment, isKnownSpaPath, MovieRecord, readMovies, renderSeoHtml, renderSitemap } from './seo';
 import { createDeadCityBillingRouter } from './deadCityBilling';
 import { createAccountDeletionRouter } from './account-deletion';
 import { configuredUploadLimit, createFaviconPipeline, validateFaviconInput } from './imageSecurity';
@@ -830,6 +830,11 @@ app.get('/api/movies', async (req: Request, res: Response) => {
       // Continue with just JSON movies if DB fails
     }
 
+    // Attach canonical slugs before filtering: collision handling needs the whole
+    // catalogue, not the current page of results.
+    const slugs = buildSlugIndex(movies);
+    movies = movies.map(m => ({ ...m, slug: slugs.get(String(m.id)) || baseMovieSlug(m) }));
+
     // Filter
     if (category) {
       movies = movies.filter(m => (m.category || '').toLowerCase() === (category as string).toLowerCase());
@@ -880,6 +885,17 @@ const findMovieIndex = (movies: any[], id: string) => {
   });
 };
 
+// Canonical slug for one movie. Resolved against the whole catalogue because two
+// films sharing a title and year must not be handed the same URL.
+const canonicalSlugFor = async (movie: { id: string | number; title: string; year?: number }): Promise<string> => {
+  try {
+    const catalogue = await getSeoMovies();
+    return buildSlugIndex(catalogue).get(String(movie.id)) || baseMovieSlug(movie);
+  } catch {
+    return baseMovieSlug(movie);
+  }
+};
+
 app.get('/api/movies/:id', async (req: Request, res: Response) => {
   try {
     const movies = getLocalMovies();
@@ -889,24 +905,13 @@ app.get('/api/movies/:id', async (req: Request, res: Response) => {
     if (movieIndex !== -1) {
       movie = movies[movieIndex];
     } else {
-      // Not in JSON, check DB
+      // Not in JSON. Resolve against the merged catalogue, which also matches
+      // slugs — `/watch/inception-2010` reaches this route as `inception-2010`.
       try {
-        const dbResult = await pool.query('SELECT * FROM movies WHERE id = $1', [req.params.id]);
-        if (dbResult.rows.length > 0) {
-          const row = dbResult.rows[0];
-          movie = {
-            id: row.id,
-            title: row.title,
-            year: row.year,
-            category: row.category,
-            poster_url: row.poster_url,
-            trailer_url: row.trailer_url,
-            is_featured: row.is_featured,
-            is_trending: row.is_trending,
-            is_latest: row.is_latest,
-            created_at: row.created_at,
-            genres: []
-          };
+        const catalogue = await getSeoMovies();
+        const resolved = findMovieBySegment(req.params.id, catalogue);
+        if (resolved) {
+          movie = { ...resolved, genres: (resolved as any).genres || [] };
         }
       } catch (dbErr) {
         console.error('DB fetch error for movie:', dbErr);
@@ -916,6 +921,8 @@ app.get('/api/movies/:id', async (req: Request, res: Response) => {
     if (!movie) {
       return res.status(404).json({ error: 'Movie not found' });
     }
+
+    movie = { ...movie, slug: await canonicalSlugFor(movie) };
 
     // Mock rating stats
     movie.rating_stats = {
@@ -2600,6 +2607,17 @@ const sendSeoPage = async (req: Request, res: Response) => {
     return res.status(404).send('Frontend not found. Ensure build was successful.');
   }
   const movies = await getSeoMovies();
+
+  // Trailer pages moved from `/watch/<id>` to `/watch/<title-year>`. Send the old
+  // form to the slug with a 301 so existing links and rankings carry over.
+  if (req.path.startsWith('/watch/')) {
+    const segment = decodeURIComponent(req.path.slice('/watch/'.length));
+    const canonical = canonicalWatchPath(segment, movies);
+    if (canonical && canonical !== req.path) {
+      return res.redirect(301, canonical);
+    }
+  }
+
   if (!isKnownSpaPath(req.path, movies)) {
     return res.status(404).type('html').send(renderSeoHtml(fs.readFileSync(frontendIndexPath, 'utf8'), req.path, movies, res.locals.cspNonce));
   }

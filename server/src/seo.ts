@@ -83,6 +83,73 @@ const PUBLIC_PAGES: Record<string, PageSeo> = {
 
 const PRIVATE_PREFIXES = ['/admin', '/auth', '/watchlist', '/favorites', '/my-reviews'];
 
+// Keep this in sync with src/lib/slug.ts on the frontend. The two builds cannot
+// share a module, so the rules are duplicated deliberately.
+export const slugify = (value: string): string => String(value ?? '')
+  .normalize('NFKD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/['’`]/g, '')
+  .replace(/&/g, ' and ')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '');
+
+/** Slug a movie would like to own, before collisions are taken into account. */
+export const baseMovieSlug = (movie: Pick<MovieRecord, 'id' | 'title' | 'year'>): string => {
+  const base = slugify(movie.title);
+  if (!base) return slugify(String(movie.id));
+  return movie.year ? `${base}-${movie.year}` : base;
+};
+
+/**
+ * Canonical slug per movie id. When two movies want the same slug, *both* get an
+ * id suffix rather than one silently winning, so a canonical URL never points at
+ * a different film than the one it was generated for.
+ */
+export const buildSlugIndex = (movies: MovieRecord[]): Map<string, string> => {
+  const counts = new Map<string, number>();
+  for (const movie of movies) {
+    const base = baseMovieSlug(movie);
+    counts.set(base, (counts.get(base) || 0) + 1);
+  }
+  const slugs = new Map<string, string>();
+  for (const movie of movies) {
+    const base = baseMovieSlug(movie);
+    slugs.set(String(movie.id), (counts.get(base) || 0) > 1 ? `${base}-${slugify(String(movie.id))}` : base);
+  }
+  return slugs;
+};
+
+export const movieSlug = (movie: MovieRecord, movies: MovieRecord[]): string =>
+  buildSlugIndex(movies).get(String(movie.id)) || baseMovieSlug(movie);
+
+export const watchPath = (slug: string): string => `/watch/${encodeURIComponent(slug)}`;
+
+const matchesId = (movie: MovieRecord, value: string): boolean =>
+  String(movie.id) === value || `db-${movie.id}` === value || String(movie.id) === value.replace(/^db-/, '');
+
+/**
+ * Resolve a `/watch/<segment>` value. Old numeric ids keep working forever so
+ * existing links and rankings survive; slugs are matched afterwards.
+ */
+export const findMovieBySegment = (segment: string, movies: MovieRecord[]): MovieRecord | undefined => {
+  if (!segment) return undefined;
+  const byId = movies.find(movie => matchesId(movie, segment));
+  if (byId) return byId;
+
+  const wanted = slugify(segment);
+  const slugs = buildSlugIndex(movies);
+  return movies.find(movie => slugs.get(String(movie.id)) === wanted)
+    || movies.find(movie => baseMovieSlug(movie) === wanted);
+};
+
+/** Canonical `/watch/...` path for whatever `/watch/<segment>` was requested. */
+export const canonicalWatchPath = (segment: string, movies: MovieRecord[]): string | null => {
+  const movie = findMovieBySegment(segment, movies);
+  if (!movie) return null;
+  return watchPath(movieSlug(movie, movies));
+};
+
 const escapeHtml = (value: unknown): string => String(value ?? '')
   .replace(/&/g, '&amp;')
   .replace(/</g, '&lt;')
@@ -144,9 +211,11 @@ export const isKnownSpaPath = (pathname: string, movies: MovieRecord[]): boolean
   if (PUBLIC_PAGES[pathname]) return true;
   if (PRIVATE_PREFIXES.some(prefix => pathname === prefix || pathname.startsWith(`${prefix}/`))) return true;
   if (pathname.startsWith('/watch/')) {
-    const id = decodeURIComponent(pathname.slice('/watch/'.length));
-    const staticMovieId = /^(?:latest|trending|tv|[a-z])-\d+$/.test(id);
-    return staticMovieId || movies.some(movie => String(movie.id) === id || `db-${movie.id}` === id);
+    const segment = decodeURIComponent(pathname.slice('/watch/'.length));
+    // Static ids (`latest-3`, `tv-1`) live only in the frontend bundle, so they
+    // are accepted without a catalogue match.
+    const staticMovieId = /^(?:latest|trending|tv|[a-z])-\d+$/.test(segment);
+    return staticMovieId || Boolean(findMovieBySegment(segment, movies));
   }
   return false;
 };
@@ -170,11 +239,14 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
   const deadCityPage = isDeadCityPath(pathname);
   let page = PUBLIC_PAGES[pathname];
   let movie: MovieRecord | undefined;
+  // A legacy `/watch/<id>` request must still declare the slug URL as canonical.
+  let canonicalOverride: string | null = null;
 
   if (pathname.startsWith('/watch/')) {
-    const id = decodeURIComponent(pathname.slice('/watch/'.length));
-    movie = movies.find(item => String(item.id) === id || `db-${item.id}` === id);
+    const segment = decodeURIComponent(pathname.slice('/watch/'.length));
+    movie = findMovieBySegment(segment, movies);
     if (movie) {
+      canonicalOverride = watchPath(movieSlug(movie, movies));
       page = {
         title: `${movie.title}${movie.year ? ` (${movie.year})` : ''} Official Trailer | TrailersHub`,
         description: movieDescription(movie),
@@ -189,7 +261,7 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
       : { title: 'Page Not Found | TrailersHub', description: 'The requested page could not be found.', heading: 'Page Not Found', noindex: true };
   }
 
-  const canonical = `${SITE_URL}${page.canonicalPath || (pathname === '/' ? '/' : pathname)}`;
+  const canonical = `${SITE_URL}${canonicalOverride || page.canonicalPath || (pathname === '/' ? '/' : pathname)}`;
   const robots = page.noindex || privatePage ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
   const image = movie?.poster_url ? (movie.poster_url.startsWith('http') ? movie.poster_url : `${SITE_URL}${movie.poster_url}`) : `${SITE_URL}/favicon.jpg`;
   const schema = movie ? {
@@ -215,8 +287,9 @@ export const renderSeoHtml = (template: string, pathname: string, movies: MovieR
   };
 
   const visibleMovies = deadCityPage ? [] : movie ? [movie] : selectMovies(pathname, movies);
+  const slugs = visibleMovies.length ? buildSlugIndex(movies) : null;
   const links = visibleMovies.map(item => {
-    const url = `/watch/${encodeURIComponent(String(item.id))}`;
+    const url = watchPath(slugs?.get(String(item.id)) || baseMovieSlug(item));
     const details = [item.year, item.category].filter(Boolean).join(' · ');
     return `<li><a href="${url}">${escapeHtml(item.title)}</a>${details ? ` <span>${escapeHtml(details)}</span>` : ''}</li>`;
   }).join('');
@@ -257,10 +330,11 @@ export const renderSitemap = (movies: MovieRecord[]): string => {
     lastmod: today,
     priority: pathname === '/' ? '1.0' : '0.8',
   }));
+  const slugs = buildSlugIndex(movies);
   for (const movie of movies) {
     const date = movie.updated_at || movie.created_at || today;
     entries.push({
-      loc: `${SITE_URL}/watch/${encodeURIComponent(String(movie.id))}`,
+      loc: `${SITE_URL}${watchPath(slugs.get(String(movie.id)) || baseMovieSlug(movie))}`,
       lastmod: /^\d{4}-\d{2}-\d{2}/.test(date) ? date.slice(0, 10) : today,
       priority: '0.7',
     });

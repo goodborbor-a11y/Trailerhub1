@@ -1,6 +1,7 @@
 import { Play, MessageSquare, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Movie } from "@/data/movies";
+import { watchHref } from "@/lib/slug";
 import { Button } from "@/components/ui/button";
 
 interface MovieCardProps {
@@ -19,7 +20,7 @@ export const MovieCard = ({ movie, onPlayTrailer, onReviewClick, rating }: Movie
 
   return (
     <Link
-      to={`/watch/${movie.id}`}
+      to={watchHref(movie)}
       className="movie-card group block flex-shrink-0 w-[160px] sm:w-[180px] md:w-[200px] cursor-pointer"
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded-xl">

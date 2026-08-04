@@ -12,6 +12,7 @@ import { useMovies, toFrontendMovie } from "@/hooks/useMovies";
 import { useUpcomingTrailers, upcomingToMovie } from "@/hooks/useUpcomingTrailers";
 import { useMovieRatings } from "@/hooks/useMovieRatings";
 import { deduplicateMovies } from "@/lib/utils/movies";
+import { watchHref } from "@/lib/slug";
 
 const Movies = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,7 +95,7 @@ const Movies = () => {
 
   const handlePlayTrailer = useCallback((movie: Movie) => {
     // Navigate to watch page with movie ID
-    navigate(`/watch/${movie.id}`);
+    navigate(watchHref(movie));
   }, [navigate]);
 
   const handleCloseTrailer = useCallback(() => {
