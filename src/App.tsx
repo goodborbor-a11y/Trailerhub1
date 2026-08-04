@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import DeadCityHub from "./pages/dead-city/DeadCityHub";
 import DeadCityPrivacyPolicy from "./pages/dead-city/DeadCityPrivacyPolicy";
@@ -13,6 +14,7 @@ const DeadCityApp = () => (
   <HelmetProvider>
     <BrowserRouter>
       <ScrollToTop />
+      <AnalyticsTracker />
       <Routes>
         <Route path="/dead-city" element={<DeadCityHub />} />
         <Route path="/dead-city/privacy-policy" element={<DeadCityPrivacyPolicy />} />

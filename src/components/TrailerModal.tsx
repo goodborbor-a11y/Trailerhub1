@@ -5,6 +5,7 @@ import { MovieActions } from "@/components/MovieActions";
 import { CommentsFixed } from "@/components/CommentsFixed";
 import { Button } from "@/components/ui/button";
 import { Movie, categories, tvSeriesCategory, latestTrailers, trendingTrailers } from "@/data/movies";
+import { trackEvent } from "@/lib/analytics";
 
 interface TrailerModalProps {
   isOpen: boolean;
@@ -154,6 +155,14 @@ const TrailerModalComponent = ({
       }
     };
   }, [isOpen, currentMovie?.id, movieTitle, trailerUrl]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    trackEvent("trailer_play", {
+      movie_id: currentMovie?.id,
+      movie_title: currentMovie?.title ?? movieTitle,
+    });
+  }, [isOpen, currentMovie?.id, currentMovie?.title, movieTitle]);
 
   const scrollUp = useCallback(() => {
     const container = scrollContainerRef.current;

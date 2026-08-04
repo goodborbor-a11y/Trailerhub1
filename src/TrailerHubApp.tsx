@@ -8,6 +8,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { PinchZoomWrapper } from "@/components/PinchZoomWrapper";
 import { FaviconInjector } from "@/components/FaviconInjector";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
@@ -116,6 +117,7 @@ const TrailerHubApp = () => {
                 <Sonner />
                 <BrowserRouter>
                   <ScrollToTop />
+                  <AnalyticsTracker />
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />

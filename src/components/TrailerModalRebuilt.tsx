@@ -6,6 +6,7 @@ import { CommentsFixed } from "@/components/CommentsFixed";
 import { Movie, categories, tvSeriesCategory, latestTrailers, trendingTrailers } from "@/data/movies";
 import { Dialog, DialogContent, DialogClose, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics";
 
 interface TrailerModalProps {
     isOpen: boolean;
@@ -129,6 +130,14 @@ const TrailerModalComponent = ({
             setIsWideMode(false);
         }
     }, [isOpen, currentMovie?.id]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        trackEvent("trailer_play", {
+            movie_id: currentMovie?.id,
+            movie_title: currentMovie?.title ?? movieTitle,
+        });
+    }, [isOpen, currentMovie?.id, currentMovie?.title, movieTitle]);
 
     // Handle Mobile orientation on Fullscreen
     useEffect(() => {

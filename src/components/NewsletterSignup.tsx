@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import api from '@/lib/api';
+import { trackEvent } from '@/lib/analytics';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email address');
@@ -45,6 +46,7 @@ export const NewsletterSignup = () => {
           title: 'Subscribed!',
           description: 'Thanks for subscribing to our newsletter.',
         });
+        trackEvent('newsletter_signup');
         setEmail('');
       }
     } catch (error: any) {
