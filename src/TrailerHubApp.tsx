@@ -10,34 +10,40 @@ import { PinchZoomWrapper } from "@/components/PinchZoomWrapper";
 import { FaviconInjector } from "@/components/FaviconInjector";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { ScrollToTop } from "@/components/ScrollToTop";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import api from "@/lib/api";
+
+// Index and Watch stay eager: they are the two pages visitors land on directly
+// (homepage and search results), so an extra round-trip would delay first paint.
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Watchlist from "./pages/Watchlist";
-import Favorites from "./pages/Favorites";
-import MyReviews from "./pages/MyReviews";
-import Movies from "./pages/Movies";
-import Upcoming from "./pages/Upcoming";
-import Trending from "./pages/Trending";
-import Categories from "./pages/Categories";
 import Watch from "./pages/Watch";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminAnalytics from "./pages/admin/AdminAnalytics";
-import AdminMovies from "./pages/admin/AdminMovies";
-import AdminCategories from "./pages/admin/AdminCategories";
-import AdminBulkImport from "./pages/admin/AdminBulkImport";
-import AdminReviews from "./pages/admin/AdminReviews";
-import AdminNewsletter from "./pages/admin/AdminNewsletter";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminLoginHistory from "./pages/admin/AdminLoginHistory";
-import AdminSecurity from "./pages/admin/AdminSecurity";
-import AdminTMDBImport from "./pages/admin/AdminTMDBImport";
-import AdminVisitors from "./pages/admin/AdminVisitors";
-import AdminUpcomingTrailers from "./pages/admin/AdminUpcomingTrailers";
-import AdminGeneralSettings from "./pages/admin/AdminGeneralSettings";
+
+// Everything else loads on demand. The admin section in particular pulls in
+// recharts, which no visitor should have to download.
+const Auth = lazy(() => import("./pages/Auth"));
+const Watchlist = lazy(() => import("./pages/Watchlist"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const MyReviews = lazy(() => import("./pages/MyReviews"));
+const Movies = lazy(() => import("./pages/Movies"));
+const Upcoming = lazy(() => import("./pages/Upcoming"));
+const Trending = lazy(() => import("./pages/Trending"));
+const Categories = lazy(() => import("./pages/Categories"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
+const AdminMovies = lazy(() => import("./pages/admin/AdminMovies"));
+const AdminCategories = lazy(() => import("./pages/admin/AdminCategories"));
+const AdminBulkImport = lazy(() => import("./pages/admin/AdminBulkImport"));
+const AdminReviews = lazy(() => import("./pages/admin/AdminReviews"));
+const AdminNewsletter = lazy(() => import("./pages/admin/AdminNewsletter"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminLoginHistory = lazy(() => import("./pages/admin/AdminLoginHistory"));
+const AdminSecurity = lazy(() => import("./pages/admin/AdminSecurity"));
+const AdminTMDBImport = lazy(() => import("./pages/admin/AdminTMDBImport"));
+const AdminVisitors = lazy(() => import("./pages/admin/AdminVisitors"));
+const AdminUpcomingTrailers = lazy(() => import("./pages/admin/AdminUpcomingTrailers"));
+const AdminGeneralSettings = lazy(() => import("./pages/admin/AdminGeneralSettings"));
 
 const queryClient = new QueryClient();
 
@@ -118,35 +124,37 @@ const TrailerHubApp = () => {
                 <BrowserRouter>
                   <ScrollToTop />
                   <AnalyticsTracker />
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/watchlist" element={<Watchlist />} />
-                    <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/my-reviews" element={<MyReviews />} />
-                    <Route path="/movies" element={<Movies />} />
-                    <Route path="/upcoming" element={<Upcoming />} />
-                    <Route path="/trending" element={<Trending />} />
-                    <Route path="/categories" element={<Categories />} />
-                    <Route path="/watch/:id" element={<Watch />} />
-                    <Route path="/privacy" element={<PrivacyPolicy />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/admin/analytics" element={<AdminAnalytics />} />
-                    <Route path="/admin/visitors" element={<AdminVisitors />} />
-                    <Route path="/admin/movies" element={<AdminMovies />} />
-                    <Route path="/admin/tmdb-import" element={<AdminTMDBImport />} />
-                    <Route path="/admin/categories" element={<AdminCategories />} />
-                    <Route path="/admin/bulk-import" element={<AdminBulkImport />} />
-                    <Route path="/admin/comments" element={<AdminReviews />} />
-                    <Route path="/admin/newsletter" element={<AdminNewsletter />} />
-                    <Route path="/admin/users" element={<AdminUsers />} />
-                    <Route path="/admin/login-history" element={<AdminLoginHistory />} />
-                    <Route path="/admin/security" element={<AdminSecurity />} />
-                    <Route path="/admin/upcoming" element={<AdminUpcomingTrailers />} />
-                    <Route path="/admin/general-settings" element={<AdminGeneralSettings />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+                  <Suspense fallback={null}>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/watchlist" element={<Watchlist />} />
+                      <Route path="/favorites" element={<Favorites />} />
+                      <Route path="/my-reviews" element={<MyReviews />} />
+                      <Route path="/movies" element={<Movies />} />
+                      <Route path="/upcoming" element={<Upcoming />} />
+                      <Route path="/trending" element={<Trending />} />
+                      <Route path="/categories" element={<Categories />} />
+                      <Route path="/watch/:id" element={<Watch />} />
+                      <Route path="/privacy" element={<PrivacyPolicy />} />
+                      <Route path="/admin" element={<AdminDashboard />} />
+                      <Route path="/admin/analytics" element={<AdminAnalytics />} />
+                      <Route path="/admin/visitors" element={<AdminVisitors />} />
+                      <Route path="/admin/movies" element={<AdminMovies />} />
+                      <Route path="/admin/tmdb-import" element={<AdminTMDBImport />} />
+                      <Route path="/admin/categories" element={<AdminCategories />} />
+                      <Route path="/admin/bulk-import" element={<AdminBulkImport />} />
+                      <Route path="/admin/comments" element={<AdminReviews />} />
+                      <Route path="/admin/newsletter" element={<AdminNewsletter />} />
+                      <Route path="/admin/users" element={<AdminUsers />} />
+                      <Route path="/admin/login-history" element={<AdminLoginHistory />} />
+                      <Route path="/admin/security" element={<AdminSecurity />} />
+                      <Route path="/admin/upcoming" element={<AdminUpcomingTrailers />} />
+                      <Route path="/admin/general-settings" element={<AdminGeneralSettings />} />
+                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
                 </BrowserRouter>
               </PinchZoomWrapper>
             </TooltipProvider>
